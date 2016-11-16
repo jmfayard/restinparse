@@ -18,11 +18,10 @@ import static com.github.jmfayard.internal.Settings.*;
 
 public class ParseRestClient {
     private static final String JSON = "application/json";
-    private static ParseRestApi loggedinClient;
-    private static ParseRestApi masterClient;
     static Moshi moshi;
     static Interceptor clientInterceptor;
-
+    private static ParseRestApi loggedinClient;
+    private static ParseRestApi masterClient;
 
     public static void setHostedParseRestUrl(String url) {
         PARSE_URL = url;
@@ -36,21 +35,36 @@ public class ParseRestClient {
 
         Interceptor headersInterceptor = okHttpInterceptor(Authentification.MASTERKEY);
 
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(headersInterceptor)
-            .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-            .build();
-
-
         Retrofit retrofit = new Retrofit.Builder().baseUrl(PARSE_URL)
-            .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi()))
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            .build();
+                .client(ok(headersInterceptor))
+                .addConverterFactory(MoshiConverterFactory.create(moshi()))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
 
         masterClient = retrofit.create(ParseRestApi.class);
 
         return masterClient;
     }
+
+    private static OkHttpClient ok(Interceptor interceptor) {
+        HttpLoggingInterceptor.Level level = null;
+        switch (Settings.LOG_LEVEL) {
+            case NONE:
+                level = HttpLoggingInterceptor.Level.NONE;
+                break;
+            case INFO:
+                level = HttpLoggingInterceptor.Level.BASIC;
+                break;
+            case DEBUG:
+                level = HttpLoggingInterceptor.Level.BODY;
+                break;
+        }
+
+        return new OkHttpClient.Builder().addInterceptor(interceptor)
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(level))
+                .build();
+    }
+
 
     public static ParseRestApi loggedinClient() {
         if (PARSE_APPLICATIONID == null) {
@@ -65,15 +79,11 @@ public class ParseRestClient {
 
         Interceptor headersInterceptor = okHttpInterceptor(Authentification.SESSIONTOKEN);
 
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(headersInterceptor)
-            .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-            .build();
-
         Retrofit retrofit = new Retrofit.Builder().baseUrl(PARSE_URL)
-            .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi()))
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            .build();
+                .client(ok(headersInterceptor))
+                .addConverterFactory(MoshiConverterFactory.create(moshi()))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
 
         loggedinClient = retrofit.create(ParseRestApi.class);
 
@@ -87,10 +97,10 @@ public class ParseRestClient {
                 Request original = chain.request();
 
                 Request.Builder requestBuilder = original.newBuilder()
-                    .header("Accept", "application/json")
-                    .header("Content-Type", JSON)
-                    .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
-                    .method(original.method(), original.body());
+                        .header("Accept", "application/json")
+                        .header("Content-Type", JSON)
+                        .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
+                        .method(original.method(), original.body());
 
                 switch (authentification) {
                     case ANONYMOUS:
@@ -130,13 +140,13 @@ public class ParseRestClient {
 
                 // Customize the request
                 Request request = original.newBuilder()
-                    .header("Accept", "application/json")
-                    .header("Content-Type", JSON)
-                    .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
-                    .header("X-Parse-REST-API-Key", PARSE_RESTKEY)
-                    .header("X-Parse-Session-Token", PARSE_SESSION_TOKEN)
-                    .method(original.method(), original.body())
-                    .build();
+                        .header("Accept", "application/json")
+                        .header("Content-Type", JSON)
+                        .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
+                        .header("X-Parse-REST-API-Key", PARSE_RESTKEY)
+                        .header("X-Parse-Session-Token", PARSE_SESSION_TOKEN)
+                        .method(original.method(), original.body())
+                        .build();
 
                 // Customize or return the response
                 return chain.proceed(request);

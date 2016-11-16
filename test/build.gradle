@@ -13,7 +13,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.jmfayard:restinparse:4f1051fccf'
+    compile 'com.github.jmfayard:restinparse:-SNAPSHOT'
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'com.natpryce:konfig:1.4.1.0'
 

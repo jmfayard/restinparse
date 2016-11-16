@@ -1,9 +1,6 @@
 package com.github.jmfayard.internal;
 
-import com.github.jmfayard.model.CloudResult;
-import com.github.jmfayard.model.ParseFile;
-import com.github.jmfayard.model.QueryResults;
-import com.github.jmfayard.model.Something;
+import com.github.jmfayard.model.*;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
@@ -13,7 +10,7 @@ import rx.Observable;
 import java.util.List;
 import java.util.Map;
 
-public interface ParseRestApi {
+interface ParseRestApi {
     /**
      * USERS
      **/

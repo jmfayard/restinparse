@@ -1,20 +1,32 @@
 package com.github.jmfayard;
 
+import com.github.jmfayard.internal.ParseQueryInternal;
 import com.github.jmfayard.internal.Strings;
+import com.github.jmfayard.model.ParseObject;
 import com.github.jmfayard.model.ParsePtr;
 import com.squareup.moshi.Moshi;
 import org.jetbrains.annotations.NotNull;
+import rx.Observable;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ParseQuery {
+public class ParseQuery<T extends ParseClass> {
     public final String className;
     public final Map<String, String> params;
 
     public ParseQuery(String className, Map<String, String> params) {
         this.className = className;
         this.params = params;
+    }
+
+    public Observable<ParseObject<T>> findAll() {
+        return new ParseQueryInternal<T>(this).find();
+    }
+
+    public Observable<ParseObject<T>> findById(String id) {
+        ParseQuery<T> query = new Builder<T>(className).withId(id).build();
+        return new ParseQueryInternal<T>(query).find();
     }
 
     public static class Builder<T extends ParseClass> {
@@ -45,51 +57,44 @@ public class ParseQuery {
         }
 
         public
-        @NotNull
-        Builder<T> equalToInt(@NotNull T key, int value) {
+        @NotNull Builder<T> equalToInt(@NotNull T key, int value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> equalToBoolean(@NotNull T key, boolean value) {
+        @NotNull Builder<T> equalToBoolean(@NotNull T key, boolean value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> equalToString(@NotNull T key, String value) {
+        @NotNull Builder<T> equalToString(@NotNull T key, String value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> equalToPtr(@NotNull T key, ParsePtr value) {
+        @NotNull Builder<T> equalToPtr(@NotNull T key, ParsePtr value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> inRelationWith(ParsePtr relation, @NotNull String key) {
+        @NotNull Builder<T> inRelationWith(ParsePtr relation, @NotNull String key) {
             Object value = objectOf("object", relation, "key", key);
             _where.put("$relatedTo", value);
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> ascending(@NotNull T key) {
+        @NotNull Builder<T> ascending(@NotNull T key) {
             order = key.toString();
             return this;
         }
 
         public
-        @NotNull
-        Builder<T> descending(@NotNull T key) {
+        @NotNull Builder<T> descending(@NotNull T key) {
             order = "-" + key.toString();
             return this;
         }
@@ -140,9 +145,13 @@ public class ParseQuery {
             return this;
         }
 
+        public Builder<T> withId(String id) {
+            _where.put("objectId", id);
+            return this;
+        }
+
         public
-        @NotNull
-        ParseQuery build() {
+        @NotNull ParseQuery<T> build() {
             Map<String, String> params = new HashMap<String, String>();
             Moshi moshi = new Moshi.Builder().build();
 
@@ -166,6 +175,7 @@ public class ParseQuery {
             return new ParseQuery(className, params);
         }
 
+
         private Object datePtr(@NotNull Date date) {
             return objectOf("__type", "Date", "iso", dateFormat.format(date));
         }
@@ -188,5 +198,7 @@ public class ParseQuery {
             map.put(key, value);
             return map;
         }
+
+
     }
 }

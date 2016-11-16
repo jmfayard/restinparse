@@ -21,7 +21,7 @@ public class Something {
     public static class Adapter {
 
         @FromJson
-        public Something fromJson(Map map)  {
+        public Something fromJson(Map map) {
             Something something = new Something();
             something.map().putAll(map);
             return something;

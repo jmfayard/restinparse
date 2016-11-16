@@ -1,7 +1,7 @@
 package com.github.jmfayard;
 
-import com.github.jmfayard.model.ParsePtr;
 import com.github.jmfayard.ParseQuery.Builder;
+import com.github.jmfayard.model.ParsePtr;
 
 public class SelfieModel {
     public enum AndroidChatMessage implements ParseClass {
@@ -38,13 +38,15 @@ public class SelfieModel {
 
         public static Builder<Attachment> query() {
             return new Builder<Attachment>("Attachment");
-        }        @Override
-        public String className() {
-            return "Attachment";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Attachment", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Attachment";
         }
 
 
@@ -61,13 +63,15 @@ public class SelfieModel {
 
         public static Builder<Blacklist> query() {
             return new Builder<Blacklist>("Blacklist");
-        }        @Override
-        public String className() {
-            return "Blacklist";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Blacklist", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Blacklist";
         }
 
 
@@ -86,13 +90,15 @@ public class SelfieModel {
 
         public static Builder<ChatAbstract> query() {
             return new Builder<ChatAbstract>("ChatAbstract");
-        }        @Override
-        public String className() {
-            return "ChatAbstract";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("ChatAbstract", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "ChatAbstract";
         }
 
 
@@ -113,13 +119,15 @@ public class SelfieModel {
 
         public static Builder<ChatMessage> query() {
             return new Builder<ChatMessage>("ChatMessage");
-        }        @Override
-        public String className() {
-            return "ChatMessage";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("ChatMessage", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "ChatMessage";
         }
 
 
@@ -136,13 +144,15 @@ public class SelfieModel {
 
         public static Builder<Comment> query() {
             return new Builder<Comment>("Comment");
-        }        @Override
-        public String className() {
-            return "Comment";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Comment", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Comment";
         }
 
 
@@ -163,13 +173,15 @@ public class SelfieModel {
 
         public static Builder<Event> query() {
             return new Builder<Event>("Event");
-        }        @Override
-        public String className() {
-            return "Event";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Event", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Event";
         }
 
 
@@ -190,13 +202,15 @@ public class SelfieModel {
 
         public static Builder<EventGroup> query() {
             return new Builder<EventGroup>("EventGroup");
-        }        @Override
-        public String className() {
-            return "EventGroup";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("EventGroup", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "EventGroup";
         }
 
 
@@ -230,13 +244,15 @@ public class SelfieModel {
 
         public static Builder<ImageUploadAdapter> query() {
             return new Builder<ImageUploadAdapter>("ImageUploadAdapter");
-        }        @Override
-        public String className() {
-            return "ImageUploadAdapter";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("ImageUploadAdapter", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "ImageUploadAdapter";
         }
 
 
@@ -256,13 +272,15 @@ public class SelfieModel {
 
         public static Builder<JobLog> query() {
             return new Builder<JobLog>("JobLog");
-        }        @Override
-        public String className() {
-            return "JobLog";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("JobLog", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "JobLog";
         }
 
 
@@ -279,13 +297,15 @@ public class SelfieModel {
 
         public static Builder<Like> query() {
             return new Builder<Like>("Like");
-        }        @Override
-        public String className() {
-            return "Like";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Like", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Like";
         }
 
 
@@ -303,13 +323,15 @@ public class SelfieModel {
 
         public static Builder<PrivatePicturesRequest> query() {
             return new Builder<PrivatePicturesRequest>("PrivatePicturesRequest");
-        }        @Override
-        public String className() {
-            return "PrivatePicturesRequest";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("PrivatePicturesRequest", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "PrivatePicturesRequest";
         }
 
 
@@ -328,13 +350,15 @@ public class SelfieModel {
 
         public static Builder<ProfileVisit> query() {
             return new Builder<ProfileVisit>("ProfileVisit");
-        }        @Override
-        public String className() {
-            return "ProfileVisit";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("ProfileVisit", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "ProfileVisit";
         }
 
 
@@ -352,13 +376,15 @@ public class SelfieModel {
 
         public static Builder<PushesToSend> query() {
             return new Builder<PushesToSend>("PushesToSend");
-        }        @Override
-        public String className() {
-            return "PushesToSend";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("PushesToSend", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "PushesToSend";
         }
 
 
@@ -377,13 +403,15 @@ public class SelfieModel {
 
         public static Builder<Subscriptions> query() {
             return new Builder<Subscriptions>("Subscriptions");
-        }        @Override
-        public String className() {
-            return "Subscriptions";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("Subscriptions", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "Subscriptions";
         }
 
 
@@ -399,13 +427,15 @@ public class SelfieModel {
 
         public static Builder<TestObject> query() {
             return new Builder<TestObject>("TestObject");
-        }        @Override
-        public String className() {
-            return "TestObject";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("TestObject", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "TestObject";
         }
 
 
@@ -422,13 +452,15 @@ public class SelfieModel {
 
         public static Builder<UsageRight> query() {
             return new Builder<UsageRight>("UsageRight");
-        }        @Override
-        public String className() {
-            return "UsageRight";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("UsageRight", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "UsageRight";
         }
 
 
@@ -445,13 +477,15 @@ public class SelfieModel {
 
         public static Builder<UserBlocked> query() {
             return new Builder<UserBlocked>("UserBlocked");
-        }        @Override
-        public String className() {
-            return "UserBlocked";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("UserBlocked", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "UserBlocked";
         }
 
 
@@ -468,13 +502,15 @@ public class SelfieModel {
 
         public static Builder<WarnLog> query() {
             return new Builder<WarnLog>("WarnLog");
-        }        @Override
-        public String className() {
-            return "WarnLog";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("WarnLog", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "WarnLog";
         }
 
 
@@ -505,13 +541,15 @@ public class SelfieModel {
 
         public static Builder<_Installation> query() {
             return new Builder<_Installation>("_Installation");
-        }        @Override
-        public String className() {
-            return "_Installation";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("_Installation", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "_Installation";
         }
 
 
@@ -529,13 +567,15 @@ public class SelfieModel {
 
         public static Builder<_Role> query() {
             return new Builder<_Role>("_Role");
-        }        @Override
-        public String className() {
-            return "_Role";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("_Role", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "_Role";
         }
 
 
@@ -556,13 +596,15 @@ public class SelfieModel {
 
         public static Builder<_Session> query() {
             return new Builder<_Session>("_Session");
-        }        @Override
-        public String className() {
-            return "_Session";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("_Session", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "_Session";
         }
 
 
@@ -624,13 +666,15 @@ public class SelfieModel {
 
         public static Builder<_User> query() {
             return new Builder<_User>("_User");
-        }        @Override
-        public String className() {
-            return "_User";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("_User", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "_User";
         }
 
 
@@ -648,13 +692,15 @@ public class SelfieModel {
 
         public static Builder<TempChatMessage> query() {
             return new Builder<TempChatMessage>("TempChatMessage");
-        }        @Override
-        public String className() {
-            return "TempChatMessage";
         }
 
         public static ParsePtr pointer(String objectId) {
             return new ParsePtr("TempChatMessage", objectId);
+        }
+
+        @Override
+        public String className() {
+            return "TempChatMessage";
         }
 
 

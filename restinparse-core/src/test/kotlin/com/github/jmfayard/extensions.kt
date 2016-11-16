@@ -5,7 +5,7 @@ import okio.BufferedSource
 import okio.Okio
 import java.io.File
 
-fun <T>  T.debug(name: String) : T {
+fun <T> T.debug(name: String): T {
     println("DEBUG: ${name} = ${toString()}")
     return this
 }

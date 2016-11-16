@@ -1,10 +1,8 @@
 package com.github.jmfayard
 
 import com.github.jmfayard.SelfieModel._User
-import com.github.jmfayard.internal.ParseRestApi
-import com.github.jmfayard.internal.ParseResultSchemas.ParseSchema
-import com.github.jmfayard.model.QueryResults
-import com.github.jmfayard.model.Something
+import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
+import com.github.jmfayard.model.ParseObject
 import com.natpryce.konfig.*
 import org.joda.time.LocalDate
 
@@ -17,8 +15,6 @@ class ApiTests : RxSpec() {
         val sessionToken by stringType
         val username by stringType
         val password by stringType
-        val userid by stringType
-        val objectId by stringType
     }
 
     val selfiedev = ConfigurationProperties.systemProperties() overriding
@@ -31,16 +27,17 @@ class ApiTests : RxSpec() {
                 .applicationId(selfiedev[instance.applicationId])
                 .masterKey(selfiedev[instance.masterKey])
                 .restKey(selfiedev[instance.restKey])
+                .logLevel(RestInParse.LogLevel.NONE)
 //                .restApiParseDotCom()
                 .restApiUrl(selfiedev[instance.restApiUrl])
                 .initialize()
 
 
-        val parse: ParseRestApi = RestInParse.masterClient()
+        val parse: ParseClient = RestInParse.masterClient()
         val sessionToken = selfiedev[instance.sessionToken]
         val credentials = selfiedev[instance.username] to selfiedev[instance.password]
 
-        val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt", "ACL")
+        val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
         val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
 
 
@@ -56,20 +53,24 @@ class ApiTests : RxSpec() {
         }
         feature("Objects") {
             val query = SelfieModel.Event.query().limit(3).build()
-            val fetchEvents = parse.query(query.className, query.params)
-            val fetchEventById = fetchEvents
-                    .flatMap { response ->
-                        val o = response.body().results.first()
-                        val id = o.map().get("objectId") as String
-                        parse.fetch("Event", id)
 
+
+            val fetchEvents = query.findAll()
+
+
+            val fetchEventById = fetchEvents
+                    .take(1)
+                    .flatMap { result: ParseObject<SelfieModel.Event> ->
+                        val id = result.getSring(SelfieModel.Event.objectId)
+                        return@flatMap query.findById(id)
                     }
 
-            retrofitScenario("GET objects by query", fetchEvents) {
-                results.size shouldBe 3
-            }
-            retrofitScenario("GET object by id", fetchEventById) {
+            rxScenario("GET objects by query", fetchEvents) {
                 map().keys should containInAnyOrder(*basicFields)
+            }
+            rxScenario("GET object by id", fetchEventById) {
+                map().keys should containInAnyOrder(*basicFields)
+                map().debug("Event")
             }
         }
 
@@ -105,12 +106,8 @@ class ApiTests : RxSpec() {
                     .build()
 
 
-            retrofitScenario("Querying users between 15 and 18", parse.query(query.className, query.params)) {
-                val list: List<Something> = this.results
-                list.isNotEmpty() shouldBe true
-                list.take(3).forEachIndexed { i, user ->
-                    user.debug("User[$i]")
-                }
+            rxScenario("Querying users between 15 and 18", query.findAll().take(3)) {
+                map().keys should containInAnyOrder(*userFields)
             }
         }
 

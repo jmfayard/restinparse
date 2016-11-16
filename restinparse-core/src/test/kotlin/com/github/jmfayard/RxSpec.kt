@@ -2,10 +2,8 @@ package com.github.jmfayard
 
 import io.kotlintest.specs.FeatureSpec
 import retrofit2.Response
-import retrofit2.http.HTTP
 import rx.Observable
 import rx.Single
-import kotlin.test.assertTrue
 
 
 abstract class RxSpec : FeatureSpec() {
@@ -33,14 +31,20 @@ abstract class RxSpec : FeatureSpec() {
             } else {
                 "HTTP ${response.message()}" shouldBe "HTTP 200"
             }
-
         }
     }
+
+    protected fun <T> rxScenario(name: String, source: Observable<T>, operation: T.() -> Unit) {
+        scenario(name) {
+            source.map { value -> value.operation() }
+                    .subscribe(::println, ::println)
+        }
+    }
+
     protected fun <T> retrofitScenario(name: String, call: Observable<Response<T>>, operation: T.() -> Unit)
             = retrofitScenario(name, call.take(1).toSingle(), operation)
 
 }
-
 
 
 //

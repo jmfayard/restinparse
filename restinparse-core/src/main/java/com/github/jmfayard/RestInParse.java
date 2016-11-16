@@ -1,6 +1,5 @@
 package com.github.jmfayard;
 
-import com.github.jmfayard.internal.ParseRestApi;
 import com.github.jmfayard.internal.Settings;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,13 +7,15 @@ public class RestInParse {
 
     public static String GREETING = "Hello World!";
 
-    public static ParseRestApi masterClient() {
+    public static ParseClient masterClient() {
         return Settings.masterClient();
     }
 
-    public static ParseRestApi loggedinClient(String parseSessionToken) {
-        return Settings.loggedinClient(parseSessionToken);
+    public static ParseClient userClient(String parseSessionToken) {
+        return Settings.userClient(parseSessionToken);
     }
+
+    public enum LogLevel {NONE, INFO, DEBUG}
 
 
     public static class Initializer {
@@ -22,6 +23,12 @@ public class RestInParse {
         private String restKey;
         private String masterKey;
         private String restApiUrl;
+        private LogLevel logLevel = LogLevel.INFO;
+
+        public @NotNull Initializer logLevel(@NotNull LogLevel logLevel) {
+            this.logLevel = logLevel;
+            return this;
+        }
 
         public @NotNull Initializer applicationId(@NotNull String applicationId) {
             this.applicationId = applicationId;
@@ -50,7 +57,7 @@ public class RestInParse {
 
         @NotNull
         public void initialize() {
-            Settings.initialize(applicationId, restKey, masterKey, restApiUrl);
+            Settings.initialize(applicationId, restKey, masterKey, restApiUrl, logLevel);
         }
 
         private void checkAll() {
