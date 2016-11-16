@@ -2,10 +2,12 @@ package com.github.jmfayard
 
 import com.github.jmfayard.SelfieModel.Event
 import com.github.jmfayard.SelfieModel._User
+import com.github.jmfayard.model.ParseFile
 import com.github.jmfayard.model.ParseObject
 import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.natpryce.konfig.*
 import org.joda.time.LocalDate
+import java.io.File
 import java.util.*
 
 class ApiTests : RxSpec() {
@@ -26,14 +28,15 @@ class ApiTests : RxSpec() {
 
     init {
 
-        RestInParse.Initializer()
+        RestInParse.configure()
                 .applicationId(instance[parse.applicationId])
                 .masterKey(instance[parse.masterKey])
                 .restKey(instance[parse.restKey])
                 .logLevel(RestInParse.LogLevel.NONE)
 //                .restApiParseDotCom()
                 .restApiUrl(instance[parse.restApiUrl])
-                .initialize()
+                .startMasterSession()
+                .apply()
 
 
         val sessionToken = instance[parse.sessionToken]
@@ -128,6 +131,23 @@ class ApiTests : RxSpec() {
             rxScenario("Querying users between 15 and 18", query.findAll().take(3)) {
                 map().keys should containInAnyOrder(*userFields)
             }
+        }
+
+        feature("Uploading files") {
+            val file = File("src/test/resources/file.txt")
+            assert(file.canRead()) { file.absolutePath }
+            var parseFile: ParseFile? = null
+            val destination = File("build/destination.txt")
+            rxScenario("Upload", RestInParse.uploadFile(file)) {
+                parseFile = this
+                parseFile.debug("File Result")
+                name.isNotBlank() shouldBe true
+            }
+
+//            rxScenario("Download", RestInParse.downloadFile(parseFile, destination)) {
+//
+//            }
+
         }
 
 

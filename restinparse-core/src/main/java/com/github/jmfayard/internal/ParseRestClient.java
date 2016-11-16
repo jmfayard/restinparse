@@ -6,9 +6,11 @@ import com.github.jmfayard.model.ParseFile;
 import com.github.jmfayard.model.ParseResultSchemas;
 import com.github.jmfayard.model.Something;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -91,4 +93,7 @@ public class ParseRestClient {
     }
 
 
+    public Observable<File> downloadFile(@NotNull ParseFile parseFile, @NotNull File destination) {
+        return null;
+    }
 }

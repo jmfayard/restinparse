@@ -1,6 +1,8 @@
 package com.github.jmfayard.internal;
 
+import com.github.jmfayard.ParseConfig;
 import com.github.jmfayard.RestInParse;
+import org.jetbrains.annotations.Nullable;
 
 public class Settings {
     static final String JSON = "application/json";
@@ -10,6 +12,7 @@ public class Settings {
     static String PARSE_MASTERKEY = null;
     static String PARSE_SESSION_TOKEN = null;
     static RestInParse.LogLevel LOG_LEVEL;
+    static ParseConfig.SessionType CURRENT_AUTHENTIFICATION = null;
 
 
     public static void initialize(String applicationId, String restKey, String masterKey, String restApiUrl, RestInParse.LogLevel logLevel) {
@@ -42,11 +45,31 @@ public class Settings {
         return new ParseRestClient(masterRestApi());
     }
 
-    public static ParseRestClient userClient(String parseSessionToken) {
-        return new ParseRestClient(userRestApi(parseSessionToken));
+    public static ParseRestClient userClient() {
+        return new ParseRestClient(userRestApi(PARSE_SESSION_TOKEN));
     }
 
     public static ParseRestClient anonymousClient() {
         return new ParseRestClient(ParseRestClientFactory.anonymousClient());
+    }
+
+    public static void setCurrentSession(ParseConfig.SessionType authentification, @Nullable String sessionToken) {
+        CURRENT_AUTHENTIFICATION = authentification;
+        if (CURRENT_AUTHENTIFICATION == ParseConfig.SessionType.SESSIONTOKEN) {
+            ParseRestClientFactory.setSessionToken(sessionToken);
+        }
+    }
+
+    public static ParseRestClient currentClient() {
+        switch (CURRENT_AUTHENTIFICATION) {
+
+            case SESSIONTOKEN:
+                return userClient();
+            case MASTERKEY:
+                return masterClient();
+            case ANONYMOUS:
+            default:
+                return anonymousClient();
+        }
     }
 }

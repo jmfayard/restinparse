@@ -3,20 +3,34 @@ package com.github.jmfayard;
 import com.github.jmfayard.internal.ParseRestClient;
 import com.github.jmfayard.internal.Settings;
 import com.github.jmfayard.model.*;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class RestInParse {
 
     public static String GREETING = "Hello World!";
 
+    public static ParseConfig configure() {
+        return new ParseConfig();
+    }
+
+
+    static ParseRestClient currentClient() {
+        return Settings.currentClient();
+    }
     static ParseRestClient masterClient() {
         return Settings.masterClient();
     }
 
-    static ParseRestClient userClient(String parseSessionToken) {
-        return Settings.userClient(parseSessionToken);
+    static ParseRestClient userClient() {
+        return Settings.userClient();
     }
 
     static ParseRestClient anonymousclient() {
@@ -43,55 +57,25 @@ public class RestInParse {
                 .map(it -> (ParseObject<ParseUser>) ParseObject.from(it));
     }
 
-    public enum LogLevel {NONE, INFO, DEBUG}
+    @NotNull
+    public static Observable<ParseFile> uploadFile(File file) {
+        String contentType = null;
+        try {
+            contentType = Files.probeContentType(file.toPath());
+        } catch (IOException e) {
 
-
-    public static class Initializer {
-        private String applicationId;
-        private String restKey;
-        private String masterKey;
-        private String restApiUrl;
-        private LogLevel logLevel = LogLevel.INFO;
-
-        public @NotNull Initializer logLevel(@NotNull LogLevel logLevel) {
-            this.logLevel = logLevel;
-            return this;
         }
-
-        public @NotNull Initializer applicationId(@NotNull String applicationId) {
-            this.applicationId = applicationId;
-            return this;
-        }
-
-        public @NotNull Initializer restKey(@NotNull String restKey) {
-            this.restKey = restKey;
-            return this;
-        }
-
-        public @NotNull Initializer masterKey(@NotNull String masterKey) {
-            this.masterKey = masterKey;
-            return this;
-        }
-
-        public @NotNull Initializer restApiParseDotCom() {
-            this.restApiUrl = "http://api.parse.com/v1";
-            return this;
-        }
-
-        public @NotNull Initializer restApiUrl(@NotNull String restApiUrl) {
-            this.restApiUrl = restApiUrl;
-            return this;
-        }
-
-        @NotNull
-        public void initialize() {
-            Settings.initialize(applicationId, restKey, masterKey, restApiUrl, logLevel);
-        }
-
-        private void checkAll() {
-            //DO: verify something
-        }
+        contentType = "application/octet-stream";
+        RequestBody body = RequestBody.create(MediaType.parse(contentType), file);
+        return currentClient().uploadFile(file.getName(), body).map(RestInParse::assertSuccessfull);
     }
+
+//    @NotNull
+//    public static Observable<File> downloadFile(@NotNull ParseFile parseFile, @NotNull File destination) {
+//        return currentClient().downloadFile(parseFile, destination);
+//    }
+
+    public enum LogLevel {NONE, INFO, DEBUG}
 
 
     private static  <T> T assertSuccessfull(Response<T> response) {
