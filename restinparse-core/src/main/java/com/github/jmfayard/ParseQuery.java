@@ -1,6 +1,6 @@
 package com.github.jmfayard;
 
-import com.github.jmfayard.internal.ParseQueryInternal;
+import com.github.jmfayard.internal.ParseTableInternal;
 import com.github.jmfayard.internal.Strings;
 import com.github.jmfayard.model.ParseObject;
 import com.github.jmfayard.model.ParsePtr;
@@ -11,7 +11,7 @@ import rx.Observable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ParseQuery<T extends ParseClass> {
+public class ParseQuery<T extends ParseColumn> {
     public final String className;
     public final Map<String, String> params;
 
@@ -21,15 +21,15 @@ public class ParseQuery<T extends ParseClass> {
     }
 
     public Observable<ParseObject<T>> findAll() {
-        return new ParseQueryInternal<T>(this).find();
+        return new ParseTableInternal<T>(className).find(params);
     }
 
     public Observable<ParseObject<T>> findById(String id) {
         ParseQuery<T> query = new Builder<T>(className).withId(id).build();
-        return new ParseQueryInternal<T>(query).find();
+        return new ParseTableInternal<T>(className).find(params);
     }
 
-    public static class Builder<T extends ParseClass> {
+    public static class Builder<T extends ParseColumn> {
         final Map<String, Object> _where = new HashMap<String, Object>();
         final List<String> _includes = new ArrayList<String>();
         final int skip = 0; // not implemtented

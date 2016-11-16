@@ -1,157 +1,93 @@
 package com.github.jmfayard.internal;
 
+
+import com.github.jmfayard.model.CloudResult;
+import com.github.jmfayard.model.ParseFile;
+import com.github.jmfayard.model.ParseResultSchemas;
 import com.github.jmfayard.model.Something;
-import com.squareup.moshi.Moshi;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import org.jetbrains.annotations.NotNull;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.moshi.MoshiConverterFactory;
+import okhttp3.RequestBody;
+import retrofit2.Response;
+import rx.Observable;
 
-import java.io.IOException;
-
-import static com.github.jmfayard.internal.Settings.*;
+import java.util.List;
+import java.util.Map;
 
 public class ParseRestClient {
-    private static final String JSON = "application/json";
-    static Moshi moshi;
-    static Interceptor clientInterceptor;
-    private static ParseRestApi loggedinClient;
-    private static ParseRestApi masterClient;
+    final ParseRestApi parseRestApi;
 
-    public static void setHostedParseRestUrl(String url) {
-        PARSE_URL = url;
+
+    public ParseRestClient(ParseRestApi parseRestApi) {
+        this.parseRestApi = parseRestApi;
     }
 
-    public static ParseRestApi masterClient() {
-
-        if (masterClient != null) {
-            return masterClient;
-        }
-
-        Interceptor headersInterceptor = okHttpInterceptor(Authentification.MASTERKEY);
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(PARSE_URL)
-                .client(ok(headersInterceptor))
-                .addConverterFactory(MoshiConverterFactory.create(moshi()))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-        masterClient = retrofit.create(ParseRestApi.class);
-
-        return masterClient;
+    
+    public Observable<Response<CloudResult<List<Something>>>> callCloudFunctionReturningList(String functionName, Map<String, Object> body) {
+        return parseRestApi.callCloudFunctionReturningListOfObjects(functionName, body);
     }
 
-    private static OkHttpClient ok(Interceptor interceptor) {
-        HttpLoggingInterceptor.Level level = null;
-        switch (Settings.LOG_LEVEL) {
-            case NONE:
-                level = HttpLoggingInterceptor.Level.NONE;
-                break;
-            case INFO:
-                level = HttpLoggingInterceptor.Level.BASIC;
-                break;
-            case DEBUG:
-                level = HttpLoggingInterceptor.Level.BODY;
-                break;
-        }
-
-        return new OkHttpClient.Builder().addInterceptor(interceptor)
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(level))
-                .build();
+    
+    public Observable<Response<CloudResult<Something>>> callCloudFunctionReturningMap(String functionName, Map<String, Object> emptyBody) {
+        return parseRestApi.callCloudFunctionReturningMap(functionName, emptyBody);
     }
 
-
-    public static ParseRestApi loggedinClient() {
-        if (PARSE_APPLICATIONID == null) {
-            throw new RuntimeException("ParseRestClient.initialize(applicationId, masterKey) was not called");
-        }
-        if (Strings.isNullOrEmpty(PARSE_SESSION_TOKEN)) {
-            throw new RuntimeException("You need a valid session token to do logged in calls");
-        }
-        if (loggedinClient != null) {
-            return loggedinClient;
-        }
-
-        Interceptor headersInterceptor = okHttpInterceptor(Authentification.SESSIONTOKEN);
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(PARSE_URL)
-                .client(ok(headersInterceptor))
-                .addConverterFactory(MoshiConverterFactory.create(moshi()))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-        loggedinClient = retrofit.create(ParseRestApi.class);
-
-        return loggedinClient;
+    
+    public Observable<Response<CloudResult<String>>> callCloudFunctionReturningString(String functionName, Map<String, Object> emptyBody) {
+        return parseRestApi.callCloudFunctionReturningString(functionName, emptyBody);
     }
 
-    private static @NotNull Interceptor okHttpInterceptor(final Authentification authentification) {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-
-                Request.Builder requestBuilder = original.newBuilder()
-                        .header("Accept", "application/json")
-                        .header("Content-Type", JSON)
-                        .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
-                        .method(original.method(), original.body());
-
-                switch (authentification) {
-                    case ANONYMOUS:
-                        requestBuilder.header("X-Parse-REST-API-Key", PARSE_RESTKEY);
-                        break;
-                    case SESSIONTOKEN:
-                        requestBuilder.header("X-Parse-REST-API-Key", PARSE_RESTKEY);
-                        requestBuilder.header("X-Parse-Session-Token", PARSE_SESSION_TOKEN);
-                        break;
-                    case MASTERKEY:
-                        requestBuilder.header("X-Parse-Master-Key", PARSE_MASTERKEY);
-                        break;
-                }
-
-                // Customize or return the response
-                return chain.proceed(requestBuilder.build());
-            }
-        };
+    
+    public Observable<Response<Something>> deleteObject(String className, String objectId) {
+        return parseRestApi.deleteObject(className, objectId);
     }
 
-    public static @NotNull Moshi moshi() {
-        if (moshi == null) {
-            moshi = new Moshi.Builder()
-                    .add(new Something.Adapter())
-                    .build();
-        }
-        return moshi;
+    
+    public Observable<Response<Something>> fetchUser(String id) {
+        return parseRestApi.fetchUser(id);
     }
 
+    
+    public Observable<Response<Something>> launchBackgroundJob(String name, Map<String, Object> emptyBody) {
+        return parseRestApi.launchBackgroundJob(name, emptyBody);
+    }
 
-    static void setSessionToken(@NotNull String sessionToken) {
-        PARSE_SESSION_TOKEN = sessionToken;
-        clientInterceptor = new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
+    
+    public Observable<Response<Something>> login(String username, String password) {
+        return parseRestApi.login(username, password);
+    }
 
-                // Customize the request
-                Request request = original.newBuilder()
-                        .header("Accept", "application/json")
-                        .header("Content-Type", JSON)
-                        .header("X-Parse-Application-Id", PARSE_APPLICATIONID)
-                        .header("X-Parse-REST-API-Key", PARSE_RESTKEY)
-                        .header("X-Parse-Session-Token", PARSE_SESSION_TOKEN)
-                        .method(original.method(), original.body())
-                        .build();
+    
+    public Observable<Response<Something>> logout() {
+        return parseRestApi.logout();
+    }
 
-                // Customize or return the response
-                return chain.proceed(request);
-            }
-        };
+    
+    public Observable<Response<Something>> me(String sessionToken) {
+        return parseRestApi.me(sessionToken);
+    }
+
+    
+    public Observable<Response<ParseResultSchemas>> schemas() {
+        return parseRestApi.schemas();
+    }
+
+    
+    public Observable<Response<Something>> storeObject(String className, Map<String, Object> object) {
+        return parseRestApi.storeObject(className, object);
+    }
+
+    
+    public Observable<Response<Something>> storeUser(Map<String, Object> object) {
+        return parseRestApi.storeUser(object);
+    }
+
+    
+    public Observable<Response<Something>> updateObject(String className, String objectId, Map<String, Object> object) {
+        return parseRestApi.updateObject(className, objectId, object);
+    }
+
+    
+    public Observable<Response<ParseFile>> uploadFile(String filename, RequestBody file) {
+        return parseRestApi.uploadFile(filename, file);
     }
 
 

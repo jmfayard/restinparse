@@ -1,31 +1,20 @@
 package com.github.jmfayard;
 
-import com.github.jmfayard.ParseQuery.Builder;
-import com.github.jmfayard.model.ParsePtr;
-
 public class SelfieModel {
-    public enum AndroidChatMessage implements ParseClass {
+    public enum AndroidChatMessage implements ParseColumn {
         ACL,
         createdAt,
         objectId,
         updatedAt;
 
-        public static Builder<AndroidChatMessage> query() {
-            return new Builder<AndroidChatMessage>("AndroidChatMessage");
-        }
 
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("AndroidChatMessage", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "AndroidChatMessage";
+        public static ParseTable<AndroidChatMessage> table() {
+            return new ParseTable<AndroidChatMessage>("AndroidChatMessage");
         }
     }
 
 
-    public enum Attachment implements ParseClass {
+    public enum Attachment implements ParseColumn {
         ACL,
         createdAt,
         file,
@@ -36,24 +25,13 @@ public class SelfieModel {
         type,
         updatedAt;
 
-        public static Builder<Attachment> query() {
-            return new Builder<Attachment>("Attachment");
+        public static ParseTable<Attachment> table() {
+            return new ParseTable<Attachment>("Attachment");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Attachment", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Attachment";
-        }
-
-
     }
 
 
-    public enum Blacklist implements ParseClass {
+    public enum Blacklist implements ParseColumn {
         ACL,
         createdAt,
         device_id,
@@ -61,24 +39,13 @@ public class SelfieModel {
         objectId,
         updatedAt;
 
-        public static Builder<Blacklist> query() {
-            return new Builder<Blacklist>("Blacklist");
+        public static ParseTable<Blacklist> table() {
+            return new ParseTable<Blacklist>("Blacklist");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Blacklist", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Blacklist";
-        }
-
-
     }
 
 
-    public enum ChatAbstract implements ParseClass {
+    public enum ChatAbstract implements ParseColumn {
         ACL,
         createdAt,
         deletedAt,
@@ -88,24 +55,13 @@ public class SelfieModel {
         partner,
         updatedAt;
 
-        public static Builder<ChatAbstract> query() {
-            return new Builder<ChatAbstract>("ChatAbstract");
+        public static ParseTable<ChatAbstract> table() {
+            return new ParseTable<ChatAbstract>("ChatAbstract");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("ChatAbstract", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "ChatAbstract";
-        }
-
-
     }
 
 
-    public enum ChatMessage implements ParseClass {
+    public enum ChatMessage implements ParseColumn {
         ACL,
         attachment,
         createdAt,
@@ -117,24 +73,13 @@ public class SelfieModel {
         sender,
         updatedAt;
 
-        public static Builder<ChatMessage> query() {
-            return new Builder<ChatMessage>("ChatMessage");
+        public static ParseTable<ChatMessage> table() {
+            return new ParseTable<ChatMessage>("ChatMessage");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("ChatMessage", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "ChatMessage";
-        }
-
-
     }
 
 
-    public enum Comment implements ParseClass {
+    public enum Comment implements ParseColumn {
         ACL,
         commentator,
         content,
@@ -142,24 +87,15 @@ public class SelfieModel {
         objectId,
         updatedAt;
 
-        public static Builder<Comment> query() {
-            return new Builder<Comment>("Comment");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Comment", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Comment";
+        public static ParseTable<Comment> table() {
+            return new ParseTable<Comment>("Comment");
         }
 
 
     }
 
 
-    public enum Event implements ParseClass {
+    public enum Event implements ParseColumn {
         ACL,
         actor,
         affects,
@@ -171,24 +107,14 @@ public class SelfieModel {
         type,
         updatedAt;
 
-        public static Builder<Event> query() {
-            return new Builder<Event>("Event");
+        public static ParseTable<Event> table() {
+            return new ParseTable<Event>("Event");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Event", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Event";
-        }
-
 
     }
 
 
-    public enum EventGroup implements ParseClass {
+    public enum EventGroup implements ParseColumn {
         ACL,
         createdAt,
         events,
@@ -200,24 +126,14 @@ public class SelfieModel {
         user,
         users;
 
-        public static Builder<EventGroup> query() {
-            return new Builder<EventGroup>("EventGroup");
+        public static ParseTable<EventGroup> table() {
+            return new ParseTable<EventGroup>("EventGroup");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("EventGroup", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "EventGroup";
-        }
-
 
     }
 
 
-    public enum ImageUploadAdapter implements ParseClass {
+    public enum ImageUploadAdapter implements ParseColumn {
         ACL,
         blurredImage,
         buyers,
@@ -242,24 +158,13 @@ public class SelfieModel {
         uploader,
         visibility;
 
-        public static Builder<ImageUploadAdapter> query() {
-            return new Builder<ImageUploadAdapter>("ImageUploadAdapter");
+        public static ParseTable<ImageUploadAdapter> table() {
+            return new ParseTable<ImageUploadAdapter>("ImageUploadAdapter");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("ImageUploadAdapter", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "ImageUploadAdapter";
-        }
-
-
     }
 
 
-    public enum JobLog implements ParseClass {
+    public enum JobLog implements ParseColumn {
         ACL,
         createdAt,
         description,
@@ -270,24 +175,13 @@ public class SelfieModel {
         updatedAt,
         urls;
 
-        public static Builder<JobLog> query() {
-            return new Builder<JobLog>("JobLog");
+        public static ParseTable<ParseColumn> table() {
+            return new ParseTable<ParseColumn>("ParseColumn");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("JobLog", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "JobLog";
-        }
-
-
     }
 
 
-    public enum Like implements ParseClass {
+    public enum Like implements ParseColumn {
         ACL,
         createdAt,
         image,
@@ -295,24 +189,13 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<Like> query() {
-            return new Builder<Like>("Like");
+        public static ParseTable<ParseColumn> table() {
+            return new ParseTable<ParseColumn>("ParseColumn");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Like", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Like";
-        }
-
-
     }
 
 
-    public enum PrivatePicturesRequest implements ParseClass {
+    public enum PrivatePicturesRequest implements ParseColumn {
         ACL,
         createdAt,
         objectId,
@@ -321,24 +204,14 @@ public class SelfieModel {
         requester,
         updatedAt;
 
-        public static Builder<PrivatePicturesRequest> query() {
-            return new Builder<PrivatePicturesRequest>("PrivatePicturesRequest");
+        public static ParseTable<PrivatePicturesRequest> table() {
+            return new ParseTable<PrivatePicturesRequest>("PrivatePicturesRequest");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("PrivatePicturesRequest", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "PrivatePicturesRequest";
-        }
-
 
     }
 
 
-    public enum ProfileVisit implements ParseClass {
+    public enum ProfileVisit implements ParseColumn {
         ACL,
         createdAt,
         lastTimeNotified,
@@ -348,24 +221,15 @@ public class SelfieModel {
         visitor,
         visitsCount;
 
-        public static Builder<ProfileVisit> query() {
-            return new Builder<ProfileVisit>("ProfileVisit");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("ProfileVisit", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "ProfileVisit";
+        public static ParseTable<ProfileVisit> table() {
+            return new ParseTable<ProfileVisit>("ProfileVisit");
         }
 
 
     }
 
 
-    public enum PushesToSend implements ParseClass {
+    public enum PushesToSend implements ParseColumn {
         ACL,
         alreadySent,
         createdAt,
@@ -374,24 +238,14 @@ public class SelfieModel {
         toUser,
         updatedAt;
 
-        public static Builder<PushesToSend> query() {
-            return new Builder<PushesToSend>("PushesToSend");
+        public static ParseTable<PushesToSend> table() {
+            return new ParseTable<PushesToSend>("PushesToSend");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("PushesToSend", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "PushesToSend";
-        }
-
 
     }
 
 
-    public enum Subscriptions implements ParseClass {
+    public enum Subscriptions implements ParseColumn {
         ACL,
         blocked,
         createdAt,
@@ -401,48 +255,28 @@ public class SelfieModel {
         updatedAt,
         useMasterKey;
 
-        public static Builder<Subscriptions> query() {
-            return new Builder<Subscriptions>("Subscriptions");
+        public static ParseTable<Subscriptions> table() {
+            return new ParseTable<Subscriptions>("Subscriptions");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("Subscriptions", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "Subscriptions";
-        }
-
 
     }
 
 
-    public enum TestObject implements ParseClass {
+    public enum TestObject implements ParseColumn {
         ACL,
         createdAt,
         foo,
         objectId,
         updatedAt;
 
-        public static Builder<TestObject> query() {
-            return new Builder<TestObject>("TestObject");
+        public static ParseTable<TestObject> table() {
+            return new ParseTable<TestObject>("TestObject");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("TestObject", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "TestObject";
-        }
-
 
     }
 
 
-    public enum UsageRight implements ParseClass {
+    public enum UsageRight implements ParseColumn {
         ACL,
         createdAt,
         image,
@@ -450,24 +284,15 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<UsageRight> query() {
-            return new Builder<UsageRight>("UsageRight");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("UsageRight", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "UsageRight";
+        public static ParseTable<UsageRight> table() {
+            return new ParseTable<UsageRight>("UsageRight");
         }
 
 
     }
 
 
-    public enum UserBlocked implements ParseClass {
+    public enum UserBlocked implements ParseColumn {
         ACL,
         createdAt,
         email,
@@ -475,24 +300,15 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<UserBlocked> query() {
-            return new Builder<UserBlocked>("UserBlocked");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("UserBlocked", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "UserBlocked";
+        public static ParseTable<UserBlocked> table() {
+            return new ParseTable<UserBlocked>("UserBlocked");
         }
 
 
     }
 
 
-    public enum WarnLog implements ParseClass {
+    public enum WarnLog implements ParseColumn {
         ACL,
         createdAt,
         message,
@@ -500,24 +316,15 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<WarnLog> query() {
-            return new Builder<WarnLog>("WarnLog");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("WarnLog", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "WarnLog";
+        public static ParseTable<WarnLog> table() {
+            return new ParseTable<WarnLog>("WarnLog");
         }
 
 
     }
 
 
-    public enum _Installation implements ParseClass {
+    public enum _Installation implements ParseColumn {
         ACL,
         GCMSenderId,
         appIdentifier,
@@ -539,24 +346,15 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<_Installation> query() {
-            return new Builder<_Installation>("_Installation");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("_Installation", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "_Installation";
+        public static ParseTable<_Installation> table() {
+            return new ParseTable<_Installation>("_Installation");
         }
 
 
     }
 
 
-    public enum _Role implements ParseClass {
+    public enum _Role implements ParseColumn {
         ACL,
         createdAt,
         name,
@@ -565,24 +363,15 @@ public class SelfieModel {
         updatedAt,
         users;
 
-        public static Builder<_Role> query() {
-            return new Builder<_Role>("_Role");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("_Role", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "_Role";
+        public static ParseTable<_Role> table() {
+            return new ParseTable<_Role>("_Role");
         }
 
 
     }
 
 
-    public enum _Session implements ParseClass {
+    public enum _Session implements ParseColumn {
         ACL,
         createdAt,
         createdWith,
@@ -594,24 +383,14 @@ public class SelfieModel {
         updatedAt,
         user;
 
-        public static Builder<_Session> query() {
-            return new Builder<_Session>("_Session");
+        public static ParseTable<_Session> table() {
+            return new ParseTable<_Session>("_Session");
         }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("_Session", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "_Session";
-        }
-
 
     }
 
 
-    public enum _User implements ParseClass {
+    public enum _User implements ParseColumn {
         campoint,
         _id,
         _created_at,
@@ -664,24 +443,15 @@ public class SelfieModel {
         username,
         validatedImage;
 
-        public static Builder<_User> query() {
-            return new Builder<_User>("_User");
-        }
-
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("_User", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "_User";
+        public static ParseTable<_User> table() {
+            return new ParseTable<_User>("_User");
         }
 
 
     }
 
 
-    public enum TempChatMessage implements ParseClass {
+    public enum TempChatMessage implements ParseColumn {
         ACL,
         createdAt,
         messageHash,
@@ -690,17 +460,9 @@ public class SelfieModel {
         sender,
         updatedAt;
 
-        public static Builder<TempChatMessage> query() {
-            return new Builder<TempChatMessage>("TempChatMessage");
-        }
 
-        public static ParsePtr pointer(String objectId) {
-            return new ParsePtr("TempChatMessage", objectId);
-        }
-
-        @Override
-        public String className() {
-            return "TempChatMessage";
+        public static ParseTable<TempChatMessage> table() {
+            return new ParseTable<TempChatMessage>("TempChatMessage");
         }
 
 

@@ -1,18 +1,46 @@
 package com.github.jmfayard;
 
+import com.github.jmfayard.internal.ParseRestClient;
 import com.github.jmfayard.internal.Settings;
+import com.github.jmfayard.model.*;
 import org.jetbrains.annotations.NotNull;
+import retrofit2.Response;
+import rx.Observable;
 
 public class RestInParse {
 
     public static String GREETING = "Hello World!";
 
-    public static ParseClient masterClient() {
+    static ParseRestClient masterClient() {
         return Settings.masterClient();
     }
 
-    public static ParseClient userClient(String parseSessionToken) {
+    static ParseRestClient userClient(String parseSessionToken) {
         return Settings.userClient(parseSessionToken);
+    }
+
+    static ParseRestClient anonymousclient() {
+        return Settings.anonymousClient();
+    }
+
+
+    @NotNull
+    public static Observable<ParseResultSchemas> schemas() {
+        return masterClient().schemas().map(RestInParse::assertSuccessfull);
+    }
+
+    @NotNull
+    public static Observable<ParseObject<ParseUser>> checkLogin(String username, String password) {
+        return anonymousclient().login(username, password)
+                .map(RestInParse::assertSuccessfull)
+                .map(it -> (ParseObject<ParseUser>) ParseObject.from(it));
+    }
+
+    @NotNull
+    public static Observable<ParseObject<ParseUser>> checkSessionToken(String parseSessionToken) {
+        return anonymousclient().me(parseSessionToken)
+                .map(RestInParse::assertSuccessfull)
+                .map(it -> (ParseObject<ParseUser>) ParseObject.from(it));
     }
 
     public enum LogLevel {NONE, INFO, DEBUG}
@@ -63,5 +91,13 @@ public class RestInParse {
         private void checkAll() {
             //DO: verify something
         }
+    }
+
+
+    private static  <T> T assertSuccessfull(Response<T> response) {
+        if (!response.isSuccessful()) {
+            throw new ParseError(response.code(), response.message());
+        }
+        return response.body();
     }
 }

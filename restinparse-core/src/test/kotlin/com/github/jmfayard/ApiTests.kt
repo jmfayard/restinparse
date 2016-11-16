@@ -1,13 +1,15 @@
 package com.github.jmfayard
 
+import com.github.jmfayard.SelfieModel.Event
 import com.github.jmfayard.SelfieModel._User
-import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.github.jmfayard.model.ParseObject
+import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.natpryce.konfig.*
 import org.joda.time.LocalDate
+import java.util.*
 
 class ApiTests : RxSpec() {
-    object instance : PropertyGroup() {
+    object parse : PropertyGroup() {
         val applicationId by stringType
         val masterKey by stringType
         val restKey by stringType
@@ -20,49 +22,57 @@ class ApiTests : RxSpec() {
     val selfiedev = ConfigurationProperties.systemProperties() overriding
             EnvironmentVariables() overriding
             ConfigurationProperties.fromResource("selfiedev.properties")
+    val instance = selfiedev
 
     init {
 
         RestInParse.Initializer()
-                .applicationId(selfiedev[instance.applicationId])
-                .masterKey(selfiedev[instance.masterKey])
-                .restKey(selfiedev[instance.restKey])
+                .applicationId(instance[parse.applicationId])
+                .masterKey(instance[parse.masterKey])
+                .restKey(instance[parse.restKey])
                 .logLevel(RestInParse.LogLevel.NONE)
 //                .restApiParseDotCom()
-                .restApiUrl(selfiedev[instance.restApiUrl])
+                .restApiUrl(instance[parse.restApiUrl])
                 .initialize()
 
 
-        val parse: ParseClient = RestInParse.masterClient()
-        val sessionToken = selfiedev[instance.sessionToken]
-        val credentials = selfiedev[instance.username] to selfiedev[instance.password]
+        val sessionToken = instance[parse.sessionToken]
+        val credentials = instance[parse.username] to instance[parse.password]
 
         val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
         val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
 
-
-        feature("Parse Schema") {
-            retrofitScenario("SCHEMA", parse.schemas()) {
-                val list: List<ParseSchema> = this.results
-//            list.forEach {table : ParseSchema ->
-//                table.fields
-//                table.fields.debug("Table[${table.className}]")
-//            }
-                list.isNotEmpty() shouldBe true
+        feature("Updating objects") {
+            val cities = listOf("Berlin", "Paris", "Cartago")
+            val city = cities[Random().nextInt(cities.size)]
+            val updates = hashMapOf(
+                    _User.locality to city,
+                    _User.countryCode to "+49"
+            ) as Map<_User, Any>
+            val jmf = _User.table().pointer("pBb9nBXGjP")
+            rxScenario("Updating user", _User.table().update(jmf, updates)) {
+                this.debug("User after update")
+                getSring(_User.locality) shouldBe city
             }
         }
+
+        feature("Parse Schema") {
+            rxScenario("SCHEMA", RestInParse.schemas()) {
+                val tables = results.map { schema: ParseSchema -> schema.className }
+                tables.debug("Found Parse Tables")
+                results.isNotEmpty() shouldBe true
+                val schema: ParseSchema = results.first()
+                schema.fields.keys should containInAnyOrder(*basicFields)
+            }
+        }
+
         feature("Objects") {
-            val query = SelfieModel.Event.query().limit(3).build()
-
-
-            val fetchEvents = query.findAll()
-
-
+            val fetchEvents = Event.table().query().limit(3).build().findAll()
             val fetchEventById = fetchEvents
                     .take(1)
                     .flatMap { result: ParseObject<SelfieModel.Event> ->
                         val id = result.getSring(SelfieModel.Event.objectId)
-                        return@flatMap query.findById(id)
+                        return@flatMap Event.table().findById(id)
                     }
 
             rxScenario("GET objects by query", fetchEvents) {
@@ -75,21 +85,30 @@ class ApiTests : RxSpec() {
         }
 
         feature("Users") {
+            val fetchUsers = _User.table().query().limit(3).build().findAll()
+            val fetchEventById = fetchUsers
+                    .take(1)
+                    .flatMap { result: ParseObject<_User> ->
+                        return@flatMap Event.table().findById(result.id())
+                    }
 
-
-            retrofitScenario("GET object by id", parse.fetchUser("DW69kOMzXp")) {
+            rxScenario("GET objects by query", fetchUsers) {
                 map().keys should containInAnyOrder(*basicFields)
+            }
+            rxScenario("GET object by id", fetchEventById) {
+                map().keys should containInAnyOrder(*basicFields)
+                map().debug("Event")
             }
         }
 
 
         feature("Loging in") {
-            retrofitScenario("... with a session token", parse.me(sessionToken)) {
+            rxScenario("... with a session token", RestInParse.checkSessionToken(sessionToken)) {
                 map().keys should containInAnyOrder(*userFields)
                 map() should haveKey("sessionToken")
             }
 
-            retrofitScenario("... with username & password", parse.login(credentials.first, credentials.second)) {
+            rxScenario("... with username & password", RestInParse.checkLogin(credentials.first, credentials.second)) {
                 map().keys should containInAnyOrder(*userFields)
                 map() should haveKey("sessionToken")
             }
@@ -99,7 +118,7 @@ class ApiTests : RxSpec() {
             val age18 = LocalDate.now().minusYears(18).toDate()
             val age15 = LocalDate.now().minusYears(15).toDate()
 
-            val query = SelfieModel._User.query()
+            val query = _User.table().query()
                     .newerThan(_User.birthday, age18)
                     .olderThan(_User.birthday, age15)
                     .limit(1000)

@@ -1,6 +1,5 @@
 package com.github.jmfayard.internal;
 
-import com.github.jmfayard.ParseClient;
 import com.github.jmfayard.RestInParse;
 
 public class Settings {
@@ -24,7 +23,7 @@ public class Settings {
 
     public static ParseRestApi masterRestApi() {
         check();
-        return ParseRestClient.masterClient();
+        return ParseRestClientFactory.masterClient();
     }
 
     private static void check() {
@@ -35,15 +34,19 @@ public class Settings {
 
     public static ParseRestApi userRestApi(String parseSessionToken) {
         check();
-        ParseRestClient.setSessionToken(parseSessionToken);
-        return ParseRestClient.loggedinClient();
+        ParseRestClientFactory.setSessionToken(parseSessionToken);
+        return ParseRestClientFactory.loggedinClient();
     }
 
-    public static ParseClient masterClient() {
-        return new ParseClientInternal(masterRestApi());
+    public static ParseRestClient masterClient() {
+        return new ParseRestClient(masterRestApi());
     }
 
-    public static ParseClient userClient(String parseSessionToken) {
-        return new ParseClientInternal(userRestApi(parseSessionToken));
+    public static ParseRestClient userClient(String parseSessionToken) {
+        return new ParseRestClient(userRestApi(parseSessionToken));
+    }
+
+    public static ParseRestClient anonymousClient() {
+        return new ParseRestClient(ParseRestClientFactory.anonymousClient());
     }
 }
