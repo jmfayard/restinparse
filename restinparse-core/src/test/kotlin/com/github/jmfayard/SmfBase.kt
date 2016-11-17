@@ -51,8 +51,6 @@ class SmfBase : RxSpec() {
             rxScenario("Login then call hellouser!", loginThenCall) {
                 this shouldBe "Bonjour jmfsmf!"
             }
-
-
         }
 
         feature("Master session") {
@@ -63,7 +61,6 @@ class SmfBase : RxSpec() {
                 list.forEach { elem -> elem should haveKey("result") }
             }
         }
-
 
     }
 }

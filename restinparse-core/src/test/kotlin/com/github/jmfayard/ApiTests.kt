@@ -38,15 +38,30 @@ class ApiTests : RxSpec() {
                 .restApiUrl(instance[parse.restApiUrl])
                 .apply()
 
-        RestInParse.startMasterSession()
 
+
+        RestInParse.startMasterSession()
 
         val sessionToken = instance[parse.sessionToken]
         val credentials = instance[parse.username] to instance[parse.password]
-        val userId = "pBb9nBXGjP"
 
         val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
         val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
+
+        feature("Register then delete user") {
+            val map = mapOf(
+                    _User.username to "wowowowow",
+                    _User.password to "ppppp",
+                    _User.email to "wowowowow@byom.com"
+            )
+            val register = _User.table().create(map)
+            val delete = register.flatMap { user: ParseObject<_User> ->
+                _User.table().delete(user.id())
+            }
+            rxScenario("register then delete", delete) {
+                this.debug("works!")
+            }
+        }
 
         feature("Objects") {
             val fetchEvents = Event.table().query()

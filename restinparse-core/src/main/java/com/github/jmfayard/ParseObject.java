@@ -17,13 +17,16 @@ public class ParseObject<T extends ParseColumn> {
         this.map = something.map();
     }
 
-    private ParseObject(Map<String, Object> map) {
+    public ParseObject(Map<String, Object> map) {
         this.map = map;
     }
+
+
 
     public Map<String, Object> map() {
         return map;
     }
+
 
 
     public String id() {

@@ -2,6 +2,7 @@ package com.github.jmfayard;
 
 import com.github.jmfayard.internal.ParseTableInternal;
 import com.github.jmfayard.model.ParsePointer;
+import com.github.jmfayard.model.Something;
 import org.jetbrains.annotations.NotNull;
 import rx.Observable;
 
@@ -38,8 +39,28 @@ public class ParseTable<T extends ParseColumn> {
         return internal.update(objectId, map);
     }
 
+    public Observable<ParseObject<T>> create(Map<T, Object> updates) {
+        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
+        Map<String, Object> map = new HashMap<>();
+        for (Map.Entry entry : updates.entrySet()) {
+            map.put(entry.getKey().toString(), entry.getValue());
+        }
+        return internal.create(map);
+    }
+
+
+
     @NotNull
     public Observable<ParseObject<T>> update(ParsePointer ptr, Map<T, Object> updates) {
         return this.update(ptr.objectId, updates);
+    }
+
+    public @NotNull Observable<Something> delete(@NotNull String objectId) {
+        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
+        return internal.delete(objectId);
+    }
+
+    public @NotNull Something delete(@NotNull ParsePointer pointer) {
+        return this.delete(pointer);
     }
 }

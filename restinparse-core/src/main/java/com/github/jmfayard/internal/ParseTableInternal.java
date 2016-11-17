@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,13 @@ public class ParseTableInternal<T extends ParseColumn> {
 
     private static <T> T assertSuccessfull(Response<T> response) {
         if (!response.isSuccessful()) {
-            throw new ParseError(response.code(), response.message());
+            try {
+                String errorBody = response.errorBody().string();
+                throw new ParseError(response.code(), errorBody);
+            } catch (IOException e) {
+                throw new ParseError(response.code(), response.message());
+            }
+
         }
         return response.body();
     }
@@ -55,6 +62,24 @@ public class ParseTableInternal<T extends ParseColumn> {
         Observable<ParseObject<T>> result = response
                 .map(ParseTableInternal::assertSuccessfull)
                 .map(ParseObject::new);
+        return result;
+
+    }
+
+    public <T extends ParseColumn> Observable<ParseObject<T>> create(Map<String, Object> map) {
+        ParseRestApi api = Settings.currentClient().parseRestApi;
+        Observable<Response<Something>> response = api.storeObject(className, map);
+        Observable<ParseObject<T>> result = response
+                .map(ParseTableInternal::assertSuccessfull)
+                .map(ParseObject::new);
+        return result;
+
+    }
+
+    public Observable<Something> delete(String objectId) {
+        ParseRestApi api = Settings.currentClient().parseRestApi;
+        Observable<Response<Something>> response = api.deleteObject(className, objectId);
+        Observable<Something> result = response.map(ParseTableInternal::assertSuccessfull);
         return result;
 
     }
