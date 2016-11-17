@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Something {
-    HashMap<String, Object> map = new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<String, Object>();
 
     public Map<String, Object> map() {
         return map;

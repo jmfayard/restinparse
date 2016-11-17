@@ -2,8 +2,7 @@ package com.github.jmfayard;
 
 import com.github.jmfayard.internal.ParseTableInternal;
 import com.github.jmfayard.internal.Strings;
-import com.github.jmfayard.model.ParseObject;
-import com.github.jmfayard.model.ParsePtr;
+import com.github.jmfayard.model.ParsePointer;
 import com.squareup.moshi.Moshi;
 import org.jetbrains.annotations.NotNull;
 import rx.Observable;
@@ -75,13 +74,13 @@ public class ParseQuery<T extends ParseColumn> {
         }
 
         public
-        @NotNull Builder<T> equalToPtr(@NotNull T key, ParsePtr value) {
+        @NotNull Builder<T> equalToPtr(@NotNull T key, ParsePointer value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull Builder<T> inRelationWith(ParsePtr relation, @NotNull String key) {
+        @NotNull Builder<T> inRelationWith(ParsePointer relation, @NotNull String key) {
             Object value = objectOf("object", relation, "key", key);
             _where.put("$relatedTo", value);
             return this;

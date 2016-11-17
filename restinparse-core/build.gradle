@@ -25,8 +25,6 @@ repositories {
 
 dependencies {
 
-
-
     // Retrofit, Ok, Moshi, Rx
     def retrofit_version = "2.1.0"
     def okhttp_version = "3.4.1"

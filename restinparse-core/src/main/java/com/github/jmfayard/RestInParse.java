@@ -12,6 +12,10 @@ import rx.Observable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class RestInParse {
 
@@ -21,10 +25,22 @@ public class RestInParse {
         return new ParseConfig();
     }
 
+    public static void startMasterSession() {
+        Settings.setCurrentSession(ParseConfig.SessionType.MASTERKEY, null);
+    }
+
+    public static void startUserSession(String parseSessionToken) {
+        Settings.setCurrentSession(ParseConfig.SessionType.SESSIONTOKEN, parseSessionToken);
+    }
+
+    public static void startAnonymousSession() {
+        Settings.setCurrentSession(ParseConfig.SessionType.ANONYMOUS, null);
+    }
 
     static ParseRestClient currentClient() {
         return Settings.currentClient();
     }
+
     static ParseRestClient masterClient() {
         return Settings.masterClient();
     }
@@ -47,14 +63,14 @@ public class RestInParse {
     public static Observable<ParseObject<ParseUser>> checkLogin(String username, String password) {
         return anonymousclient().login(username, password)
                 .map(RestInParse::assertSuccessfull)
-                .map(it -> (ParseObject<ParseUser>) ParseObject.from(it));
+                .map(ParseObject::new);
     }
 
     @NotNull
     public static Observable<ParseObject<ParseUser>> checkSessionToken(String parseSessionToken) {
         return anonymousclient().me(parseSessionToken)
                 .map(RestInParse::assertSuccessfull)
-                .map(it -> (ParseObject<ParseUser>) ParseObject.from(it));
+                .map(ParseObject::new);
     }
 
     @NotNull
@@ -70,18 +86,38 @@ public class RestInParse {
         return currentClient().uploadFile(file.getName(), body).map(RestInParse::assertSuccessfull);
     }
 
+    public static Observable<String> callCloudFunctionReturningString(@NotNull String functionName, @NotNull Map<String, Object> parameters) {
+        Observable<Response<CloudResult<String>>> responseObservable = currentClient().callCloudFunctionReturningString(functionName, parameters);
+        return responseObservable.map(RestInParse::assertSuccessfull)
+                .map(r -> r.result);
+    }
+
+    public static <T> Observable<List<T>> callCloudFunctionReturningList(@NotNull String functionName, @NotNull Map<String, Object> parameters) {
+        Observable<Response<CloudResult<List<Something>>>> responseObservable = currentClient().callCloudFunctionReturningList(functionName, parameters);
+        return responseObservable
+                .map(RestInParse::assertSuccessfull)
+                .map(r -> {
+                    if (r == null || r.result == null) return Collections.emptyList();
+                    ArrayList<T> result = new ArrayList<>();
+                    for (Something something : r.result) {
+                        result.add(((T) something.map()));
+                    }
+                    return result;
+                });
+    }
+
 //    @NotNull
 //    public static Observable<File> downloadFile(@NotNull ParseFile parseFile, @NotNull File destination) {
 //        return currentClient().downloadFile(parseFile, destination);
 //    }
 
-    public enum LogLevel {NONE, INFO, DEBUG}
-
-
-    private static  <T> T assertSuccessfull(Response<T> response) {
+    private static <T> T assertSuccessfull(Response<T> response) {
         if (!response.isSuccessful()) {
             throw new ParseError(response.code(), response.message());
         }
         return response.body();
     }
+
+
+    public enum LogLevel {NONE, INFO, DEBUG}
 }

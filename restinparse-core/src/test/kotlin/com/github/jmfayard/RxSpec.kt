@@ -35,9 +35,13 @@ abstract class RxSpec : FeatureSpec() {
     }
 
     protected fun <T> rxScenario(name: String, source: Observable<T>, operation: T.() -> Unit) {
-        scenario(name) {
-            source.map { value -> value.operation() }
-                    .subscribe(::println, ::println)
+        val blocking = source.toBlocking().iterator
+        var i = 0
+        for (step in blocking) {
+            i++
+            scenario("$name #$i") {
+                step.operation()
+            }
         }
     }
 

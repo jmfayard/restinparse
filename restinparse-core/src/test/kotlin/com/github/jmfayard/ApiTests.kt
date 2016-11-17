@@ -3,10 +3,12 @@ package com.github.jmfayard
 import com.github.jmfayard.SelfieModel.Event
 import com.github.jmfayard.SelfieModel._User
 import com.github.jmfayard.model.ParseFile
-import com.github.jmfayard.model.ParseObject
 import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
+import com.github.jmfayard.model.ParseUser
 import com.natpryce.konfig.*
+import io.kotlintest.matchers.Matcher
 import org.joda.time.LocalDate
+import org.joda.time.LocalDateTime
 import java.io.File
 import java.util.*
 
@@ -33,17 +35,71 @@ class ApiTests : RxSpec() {
                 .masterKey(instance[parse.masterKey])
                 .restKey(instance[parse.restKey])
                 .logLevel(RestInParse.LogLevel.NONE)
-//                .restApiParseDotCom()
                 .restApiUrl(instance[parse.restApiUrl])
-                .startMasterSession()
                 .apply()
+
+        RestInParse.startMasterSession()
 
 
         val sessionToken = instance[parse.sessionToken]
         val credentials = instance[parse.username] to instance[parse.password]
+        val userId = "pBb9nBXGjP"
 
         val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
         val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
+
+        feature("Objects") {
+            val fetchEvents = Event.table().query()
+                    .limit(3)
+                    .include(Event.affects)
+                    .exists(Event.affects)
+                    .build().findAll()
+            val fetchEventById = fetchEvents
+                    .take(1)
+                    .flatMap { result: ParseObject<Event> ->
+                        val id = result.getSring(SelfieModel.Event.objectId)
+                        return@flatMap Event.table().findById(id)
+                    }
+
+            rxScenario("GET objects by query", fetchEvents) {
+                map().debug("event")
+                map().get("affects").debug("affects")
+                map().keys should containInAnyOrder(*basicFields)
+                getPointer(Event.actor).debug("actor") should notBeNull
+//TODO                getParseUser(Event.affects).debug("affects") should notBeNull
+//TODO                getParseObject<_User>(Event.affects).debug("affects") should notBeNull
+            }
+            rxScenario("GET object by id", fetchEventById) {
+                map().keys should containInAnyOrder(*basicFields)
+
+            }
+        }
+
+
+        feature("Users") {
+            val query = _User.table().query()
+                    .equalToString(_User.username, "restinparse")
+                    .build()
+            rxScenario("get values from object", query.findAll()) {
+                this.debug("parsedebug")
+                getSring(_User.gender).debug("gender") shouldBe "MALE"
+                getInt(_User.rate).debug("rate") shouldBe 5
+                getDouble(_User.rate).debug("rate") shouldBe 5.0
+                getBoolean(_User.privacyMode) shouldBe true
+                val file = getFile(_User.image)!!.debug("image")
+                file.name.isNotBlank() shouldBe true
+                file.url.isNotBlank() shouldBe true
+                getSring(_User.username) shouldBe "restinparse"
+                val birthday = LocalDateTime.fromDateFields(getDate(_User.birthday))
+                birthday.year shouldBe 1981
+
+                getFile(_User.birthday) shouldBe null
+                getDate(_User.image) shouldBe null
+                getPointer(_User.image) shouldBe null
+                getParseObject<ParseUser>(_User.image) shouldBe null
+                getParseUser(_User.image) shouldBe null
+            }
+        }
 
         feature("Updating objects") {
             val cities = listOf("Berlin", "Paris", "Cartago")
@@ -69,23 +125,7 @@ class ApiTests : RxSpec() {
             }
         }
 
-        feature("Objects") {
-            val fetchEvents = Event.table().query().limit(3).build().findAll()
-            val fetchEventById = fetchEvents
-                    .take(1)
-                    .flatMap { result: ParseObject<SelfieModel.Event> ->
-                        val id = result.getSring(SelfieModel.Event.objectId)
-                        return@flatMap Event.table().findById(id)
-                    }
 
-            rxScenario("GET objects by query", fetchEvents) {
-                map().keys should containInAnyOrder(*basicFields)
-            }
-            rxScenario("GET object by id", fetchEventById) {
-                map().keys should containInAnyOrder(*basicFields)
-                map().debug("Event")
-            }
-        }
 
         feature("Users") {
             val fetchUsers = _User.table().query().limit(3).build().findAll()
@@ -153,5 +193,12 @@ class ApiTests : RxSpec() {
 
     }
 
+
 }
 
+object notBeNull : Matcher<Any?> {
+    override fun test(value: Any?) {
+        checkNotNull(value)
+    }
+
+}
