@@ -11,12 +11,11 @@ class SmfBase : RxSpec() {
         val restKey by stringType
     }
 
-    val smfbase = ConfigurationProperties.systemProperties() overriding
-            EnvironmentVariables() overriding
-            ConfigurationProperties.fromResource("selfiebase.properties")
-    val instance = smfbase
-
-    init {
+    fun initParse() {
+        val smfbase = ConfigurationProperties.systemProperties() overriding
+                EnvironmentVariables() overriding
+                ConfigurationProperties.fromResource("selfiebase.properties")
+        val instance = smfbase
 
         RestInParse.configure()
                 .applicationId(instance[parse.applicationId])
@@ -25,9 +24,11 @@ class SmfBase : RxSpec() {
                 .logLevel(RestInParse.LogLevel.NONE)
                 .restApiUrlOfParseDotCom()
                 .apply()
+    }
 
-
+    fun tests() {
         feature("Anonymous session") {
+
             RestInParse.startAnonymousSession()
             val call: Observable<String> = RestInParse.callCloudFunctionReturningString("hello", mapOf("name" to "Philip", "greeting" to "Hallo"))
             call.subscribe(::println, ::println)
@@ -61,6 +62,11 @@ class SmfBase : RxSpec() {
                 list.forEach { elem -> elem should haveKey("result") }
             }
         }
+    }
 
+
+    init {
+//        initParse()
+//        tests()
     }
 }

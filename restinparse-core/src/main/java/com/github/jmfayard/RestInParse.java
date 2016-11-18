@@ -93,14 +93,14 @@ public class RestInParse {
     }
 
     public static <T> Observable<List<T>> callCloudFunctionReturningList(@NotNull String functionName, @NotNull Map<String, Object> parameters) {
-        Observable<Response<CloudResult<List<Something>>>> responseObservable = currentClient().callCloudFunctionReturningList(functionName, parameters);
+        Observable<Response<CloudResult<List<ParseMap>>>> responseObservable = currentClient().callCloudFunctionReturningList(functionName, parameters);
         return responseObservable
                 .map(RestInParse::assertSuccessfull)
                 .map(r -> {
                     if (r == null || r.result == null) return Collections.emptyList();
                     ArrayList<T> result = new ArrayList<>();
-                    for (Something something : r.result) {
-                        result.add(((T) something.map()));
+                    for (ParseMap parseMap : r.result) {
+                        result.add(((T) parseMap.map()));
                     }
                     return result;
                 });

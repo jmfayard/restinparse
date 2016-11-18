@@ -15,20 +15,20 @@ interface ParseRestApi {
      * USERS
      **/
     @GET("login")
-    Observable<Response<Something>> login(@Query("username") String username, @Query("password") String password);
+    Observable<Response<ParseMap>> login(@Query("username") String username, @Query("password") String password);
 
     @POST("logout")
-    Observable<Response<Something>> logout();
+    Observable<Response<ParseMap>> logout();
 
 
     @GET("users/me")
-    Observable<Response<Something>> me(@Header("X-Parse-Session-Token") String sessionToken);
+    Observable<Response<ParseMap>> me(@Header("X-Parse-Session-Token") String sessionToken);
 
     @GET("classes/{className}/{id}")
-    Observable<Response<Something>> fetch(@Path("className") String className, @Path("id") String id);
+    Observable<Response<ParseMap>> fetch(@Path("className") String className, @Path("id") String id);
 
     @GET("users/{id}")
-    Observable<Response<Something>> fetchUser(@Path("id") String id);
+    Observable<Response<ParseMap>> fetchUser(@Path("id") String id);
 
 
     @GET("classes/{className}")
@@ -38,10 +38,10 @@ interface ParseRestApi {
      * Cloud Code
      **/
     @POST("functions/{name}")
-    Observable<Response<CloudResult<Something>>> callCloudFunctionReturningMap(@NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
+    Observable<Response<CloudResult<ParseMap>>> callCloudFunctionReturningMap(@NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
 
     @POST("functions/{name}")
-    Observable<Response<CloudResult<List<Something>>>> callCloudFunctionReturningListOfObjects(
+    Observable<Response<CloudResult<List<ParseMap>>>> callCloudFunctionReturningListOfObjects(
             @NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
 
     @POST("functions/{name}")
@@ -49,7 +49,7 @@ interface ParseRestApi {
             @NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
 
     @POST("jobs/{name}")
-    Observable<Response<Something>> launchBackgroundJob(@NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
+    Observable<Response<ParseMap>> launchBackgroundJob(@NotNull @Path("name") String name, @NotNull @Body Map<String, Object> emptyBody);
 
     @GET("schemas")
     Observable<Response<ParseResultSchemas>> schemas();
@@ -59,15 +59,15 @@ interface ParseRestApi {
     Observable<Response<ParseFile>> uploadFile(@Path("name") String filename, @Body RequestBody file);
 
     @POST("classes/{class}")
-    Observable<Response<Something>> storeObject(@Path("class") String className, @Body Map<String, Object> object);
+    Observable<Response<ParseMap>> storeObject(@Path("class") String className, @Body Map<String, Object> object);
 
     @POST("users")
-    Observable<Response<Something>> storeUser(@Body Map<String, Object> object);
+    Observable<Response<ParseMap>> storeUser(@Body Map<String, Object> object);
 
     @PUT("classes/{class}/{id}")
-    Observable<Response<Something>> updateObject(@Path("class") String className, @Path("id") String objectId, @Body Map<String, Object> object);
+    Observable<Response<ParseMap>> updateObject(@Path("class") String className, @Path("id") String objectId, @Body Map<String, Object> object);
 
     @DELETE("classes/{class}/{id}")
-    Observable<Response<Something>> deleteObject(@Path(("class")) String className, @Path("id") String objectId);
+    Observable<Response<ParseMap>> deleteObject(@Path(("class")) String className, @Path("id") String objectId);
 
 }

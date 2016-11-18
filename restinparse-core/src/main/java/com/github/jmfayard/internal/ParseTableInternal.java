@@ -4,7 +4,7 @@ import com.github.jmfayard.ParseColumn;
 import com.github.jmfayard.ParseObject;
 import com.github.jmfayard.model.ParseError;
 import com.github.jmfayard.model.QueryResults;
-import com.github.jmfayard.model.Something;
+import com.github.jmfayard.model.ParseMap;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
@@ -25,16 +25,20 @@ public class ParseTableInternal<T extends ParseColumn> {
 
     private static <T> T assertSuccessfull(Response<T> response) {
         if (!response.isSuccessful()) {
-            try {
-                String errorBody = response.errorBody().string();
-                throw new ParseError(response.code(), errorBody);
-            } catch (IOException e) {
-                throw new ParseError(response.code(), response.message());
-            }
-
+            throw errorFrom(response);
         }
         return response.body();
     }
+
+    private static  ParseError errorFrom(Response response) {
+        try {
+            String errorBody = response.errorBody().string();
+            return ParseRestClientFactory.parseErrorAdapter().fromJson(errorBody);
+        } catch (IOException e) {
+            return new  ParseError(response.code(), response.message());
+        }
+    }
+
 
     public Observable<ParseObject<T>> find(Map<String, String> params) {
         ParseRestApi api = ParseRestClientFactory.masterClient();
@@ -42,12 +46,12 @@ public class ParseTableInternal<T extends ParseColumn> {
         return response.flatMap(r -> {
             List<ParseObject<T>> objects = new ArrayList<ParseObject<T>>();
             if (r.isSuccessful()) {
-                List<Something> found = r.body().results;
+                List<ParseMap> found = r.body().results;
                 if (found == null) {
                     found = Collections.emptyList();
                 }
-                for (Something something : found) {
-                    ParseObject<T> o = new ParseObject<T>(something);
+                for (ParseMap parseMap : found) {
+                    ParseObject<T> o = new ParseObject<T>(parseMap);
                     objects.add(o);
                 }
             }
@@ -58,7 +62,7 @@ public class ParseTableInternal<T extends ParseColumn> {
     @NotNull
     public Observable<ParseObject<T>> update(String objectId, Map<String, Object> map) {
         ParseRestApi api = ParseRestClientFactory.masterClient();
-        Observable<Response<Something>> response = api.updateObject(className, objectId, map);
+        Observable<Response<ParseMap>> response = api.updateObject(className, objectId, map);
         Observable<ParseObject<T>> result = response
                 .map(ParseTableInternal::assertSuccessfull)
                 .map(ParseObject::new);
@@ -68,7 +72,7 @@ public class ParseTableInternal<T extends ParseColumn> {
 
     public <T extends ParseColumn> Observable<ParseObject<T>> create(Map<String, Object> map) {
         ParseRestApi api = Settings.currentClient().parseRestApi;
-        Observable<Response<Something>> response = api.storeObject(className, map);
+        Observable<Response<ParseMap>> response = api.storeObject(className, map);
         Observable<ParseObject<T>> result = response
                 .map(ParseTableInternal::assertSuccessfull)
                 .map(ParseObject::new);
@@ -76,10 +80,10 @@ public class ParseTableInternal<T extends ParseColumn> {
 
     }
 
-    public Observable<Something> delete(String objectId) {
+    public Observable<ParseMap> delete(String objectId) {
         ParseRestApi api = Settings.currentClient().parseRestApi;
-        Observable<Response<Something>> response = api.deleteObject(className, objectId);
-        Observable<Something> result = response.map(ParseTableInternal::assertSuccessfull);
+        Observable<Response<ParseMap>> response = api.deleteObject(className, objectId);
+        Observable<ParseMap> result = response.map(ParseTableInternal::assertSuccessfull);
         return result;
 
     }

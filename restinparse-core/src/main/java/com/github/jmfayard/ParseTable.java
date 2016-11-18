@@ -2,7 +2,7 @@ package com.github.jmfayard;
 
 import com.github.jmfayard.internal.ParseTableInternal;
 import com.github.jmfayard.model.ParsePointer;
-import com.github.jmfayard.model.Something;
+import com.github.jmfayard.model.ParseMap;
 import org.jetbrains.annotations.NotNull;
 import rx.Observable;
 
@@ -24,6 +24,10 @@ public class ParseTable<T extends ParseColumn> {
     public Observable<ParseObject<T>> findById(String id) {
         ParseQuery<T> query = query().withId(id).build();
         return new ParseTableInternal<T>(query.className).find(query.params);
+    }
+
+    public Observable<ParseObject<T>> findById(ParsePointer id) {
+        return findById(id.objectId);
     }
 
     public ParsePointer pointer(String objectId) {
@@ -55,12 +59,12 @@ public class ParseTable<T extends ParseColumn> {
         return this.update(ptr.objectId, updates);
     }
 
-    public @NotNull Observable<Something> delete(@NotNull String objectId) {
+    public @NotNull Observable<ParseMap> delete(@NotNull String objectId) {
         ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
         return internal.delete(objectId);
     }
 
-    public @NotNull Something delete(@NotNull ParsePointer pointer) {
+    public @NotNull ParseMap delete(@NotNull ParsePointer pointer) {
         return this.delete(pointer);
     }
 }

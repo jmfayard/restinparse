@@ -3,7 +3,7 @@ package com.github.jmfayard;
 import com.github.jmfayard.model.ParseFile;
 import com.github.jmfayard.model.ParsePointer;
 import com.github.jmfayard.model.ParseUser;
-import com.github.jmfayard.model.Something;
+import com.github.jmfayard.model.ParseMap;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 
@@ -13,8 +13,8 @@ public class ParseObject<T extends ParseColumn> {
 
     private Map<String, Object> map = new HashMap<String, Object>();
 
-    public ParseObject(Something something) {
-        this.map = something.map();
+    public ParseObject(ParseMap parseMap) {
+        this.map = parseMap.map();
     }
 
     public ParseObject(Map<String, Object> map) {

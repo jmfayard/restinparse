@@ -1,7 +1,9 @@
 package com.github.jmfayard.internal;
 
 import com.github.jmfayard.ParseConfig;
-import com.github.jmfayard.model.Something;
+import com.github.jmfayard.model.ParseError;
+import com.github.jmfayard.model.ParseMap;
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -126,10 +128,18 @@ public class ParseRestClientFactory {
     public static @NotNull Moshi moshi() {
         if (moshi == null) {
             moshi = new Moshi.Builder()
-                    .add(new Something.Adapter())
+                    .add(new ParseMap.Adapter())
                     .build();
         }
         return moshi;
+    }
+
+    public static JsonAdapter<ParseMap> mapAdapter() {
+        return moshi().adapter(ParseMap.class);
+    }
+
+    public static JsonAdapter<ParseError> parseErrorAdapter() {
+        return moshi().adapter(ParseError.class);
     }
 
 

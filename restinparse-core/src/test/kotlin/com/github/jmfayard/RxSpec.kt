@@ -40,7 +40,7 @@ abstract class RxSpec : FeatureSpec() {
         for (step in blocking) {
             i++
             scenario("$name #$i") {
-                step.operation()
+                    step.operation()
             }
         }
     }
@@ -56,7 +56,7 @@ abstract class RxSpec : FeatureSpec() {
 //        scenario(name) {
 //            val response = call.toBlocking().value()
 //            assert(response.isSuccessful) {
-//                "[$name] Expected an api error, but got HTTP ${response.message()}"
+//                "[$name] Expected an api error, but got HTTP ${response.error()}"
 //            }
 //            val data = response.body()
 //            assert(data.isError) {

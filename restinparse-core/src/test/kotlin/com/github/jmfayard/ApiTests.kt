@@ -34,7 +34,7 @@ class ApiTests : RxSpec() {
                 .applicationId(instance[parse.applicationId])
                 .masterKey(instance[parse.masterKey])
                 .restKey(instance[parse.restKey])
-                .logLevel(RestInParse.LogLevel.NONE)
+                .logLevel(RestInParse.LogLevel.DEBUG)
                 .restApiUrl(instance[parse.restApiUrl])
                 .apply()
 
@@ -48,20 +48,22 @@ class ApiTests : RxSpec() {
         val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
         val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
 
-        feature("Register then delete user") {
-            val map = mapOf(
-                    _User.username to "wowowowow",
-                    _User.password to "ppppp",
-                    _User.email to "wowowowow@byom.com"
-            )
-            val register = _User.table().create(map)
-            val delete = register.flatMap { user: ParseObject<_User> ->
-                _User.table().delete(user.id())
-            }
-            rxScenario("register then delete", delete) {
-                this.debug("works!")
-            }
-        }
+//        feature("Register then delete user") {
+//            val random = Random().nextInt()
+//            val map = mapOf(
+//                    _User.username to "wowowowow$random",
+//                    _User.password to "ppppppppp",
+//                    _User.email to "wowowowow$random@byom.com"
+//            )
+//
+//            val register = RestInParse.registerUser(map)
+//            val delete = register.flatMap { user: ParseObject<_User> ->
+//                _User.table().delete(user.id())
+//            }
+//            rxScenario("register then delete", delete) {
+//                this.debug("works!")
+//            }
+//        }
 
         feature("Objects") {
             val fetchEvents = Event.table().query()
@@ -77,7 +79,7 @@ class ApiTests : RxSpec() {
                     }
 
             rxScenario("GET objects by query", fetchEvents) {
-                map().debug("event")
+                debug("Event")
                 map().get("affects").debug("affects")
                 map().keys should containInAnyOrder(*basicFields)
                 getPointer(Event.actor).debug("actor") should notBeNull
@@ -124,8 +126,12 @@ class ApiTests : RxSpec() {
                     _User.countryCode to "+49"
             ) as Map<_User, Any>
             val jmf = _User.table().pointer("pBb9nBXGjP")
-            rxScenario("Updating user", _User.table().update(jmf, updates)) {
-                this.debug("User after update")
+            val observable = _User.table().update(jmf, updates)
+                .flatMap {
+                    _User.table().findById(jmf)
+                }
+            rxScenario("Updating user", observable) {
+                map().debug("User after update")
                 getSring(_User.locality) shouldBe city
             }
         }
