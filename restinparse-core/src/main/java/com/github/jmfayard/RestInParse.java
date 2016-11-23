@@ -10,8 +10,6 @@ import retrofit2.Response;
 import rx.Observable;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,53 +35,40 @@ public class RestInParse {
         Settings.setCurrentSession(ParseConfig.SessionType.ANONYMOUS, null);
     }
 
-    static ParseRestClient currentClient() {
+    private static ParseRestClient currentClient() {
         return Settings.currentClient();
     }
 
-    static ParseRestClient masterClient() {
-        return Settings.masterClient();
-    }
-
-    static ParseRestClient userClient() {
-        return Settings.userClient();
-    }
-
-    static ParseRestClient anonymousclient() {
-        return Settings.anonymousClient();
-    }
 
 
     @NotNull
     public static Observable<ParseResultSchemas> schemas() {
-        return masterClient().schemas().map(RestInParse::assertSuccessfull);
+        return Settings.masterClient().schemas().map(RestInParse::assertSuccessfull);
     }
 
     @NotNull
     public static Observable<ParseObject<ParseUser>> checkLogin(String username, String password) {
-        return anonymousclient().login(username, password)
+        return Settings.anonymousClient().login(username, password)
                 .map(RestInParse::assertSuccessfull)
                 .map(ParseObject::new);
     }
 
     @NotNull
     public static Observable<ParseObject<ParseUser>> checkSessionToken(String parseSessionToken) {
-        return anonymousclient().me(parseSessionToken)
+        return Settings.anonymousClient().me(parseSessionToken)
                 .map(RestInParse::assertSuccessfull)
                 .map(ParseObject::new);
     }
 
     @NotNull
-    public static Observable<ParseFile> uploadFile(File file) {
-        String contentType = null;
-        try {
-            contentType = Files.probeContentType(file.toPath());
-        } catch (IOException e) {
-
-        }
-        contentType = "application/octet-stream";
+    public static Observable<ParseFile> uploadFile(File file, String contentType) {
         RequestBody body = RequestBody.create(MediaType.parse(contentType), file);
         return currentClient().uploadFile(file.getName(), body).map(RestInParse::assertSuccessfull);
+    }
+
+    @NotNull
+    public static Observable<ParseFile> uploadFile(String filename, RequestBody requestBody) {
+        return currentClient().uploadFile(filename, requestBody).map(RestInParse::assertSuccessfull);
     }
 
     public static Observable<String> callCloudFunctionReturningString(@NotNull String functionName, @NotNull Map<String, Object> parameters) {

@@ -199,15 +199,11 @@ class ApiTests : RxSpec() {
             assert(file.canRead()) { file.absolutePath }
             var parseFile: ParseFile? = null
             val destination = File("build/destination.txt")
-            rxScenario("Upload", RestInParse.uploadFile(file)) {
+            rxScenario("Upload", RestInParse.uploadFile(file, "text/plain")) {
                 parseFile = this
                 parseFile.debug("File Result")
                 name.isNotBlank() shouldBe true
             }
-
-//            rxScenario("Download", RestInParse.downloadFile(parseFile, destination)) {
-//
-//            }
 
         }
 

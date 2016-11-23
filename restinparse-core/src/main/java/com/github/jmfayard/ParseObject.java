@@ -100,6 +100,11 @@ public class ParseObject<T extends ParseColumn> {
     }
 
 
+    public @Nullable Map<String, Object> getJsonObject(T column) {
+        Map<String, Object> map = getAsMap(column);
+        return map;
+    }
+
     public @Nullable ParseObject<ParseUser> getParseUser(T column) {
         return getParseObject(column);
     }

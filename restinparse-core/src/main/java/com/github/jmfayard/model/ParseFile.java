@@ -1,15 +1,23 @@
 package com.github.jmfayard.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ParseFile {
-    public final String name;
-    public final String url;
-    public final String __type;
+    public String name;
+    public String url;
+    public String __type;
 
 
     public ParseFile(String name, String url) {
-        __type = "File";
+        this.__type = "File";
         this.name = name;
         this.url = url;
+
+    }
+
+    public ParseFile() {
+        this.__type = "File";
     }
 
     @Override
@@ -19,5 +27,13 @@ public class ParseFile {
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 '}';
+    }
+
+    public Map<String, String> map() {
+        HashMap<String, String> result = new HashMap<>();
+        result.put("__type", "File");
+        result.put("name", name);
+        result.put("url", url);
+        return result;
     }
 }

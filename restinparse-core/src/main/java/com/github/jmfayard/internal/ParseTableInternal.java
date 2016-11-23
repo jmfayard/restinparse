@@ -33,7 +33,8 @@ public class ParseTableInternal<T extends ParseColumn> {
     private static  ParseError errorFrom(Response response) {
         try {
             String errorBody = response.errorBody().string();
-            return ParseRestClientFactory.parseErrorAdapter().fromJson(errorBody);
+            ParseError copy = ParseRestClientFactory.parseErrorAdapter().fromJson(errorBody);
+            return new ParseError(copy.code, copy.error);
         } catch (IOException e) {
             return new  ParseError(response.code(), response.message());
         }

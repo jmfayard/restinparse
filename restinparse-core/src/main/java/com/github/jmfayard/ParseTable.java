@@ -1,6 +1,7 @@
 package com.github.jmfayard;
 
 import com.github.jmfayard.internal.ParseTableInternal;
+import com.github.jmfayard.model.ParseMapBuilder;
 import com.github.jmfayard.model.ParsePointer;
 import com.github.jmfayard.model.ParseMap;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ParseTable<T extends ParseColumn> {
+
+    public String className() {
+        return className;
+    }
 
     private final String className;
 
@@ -43,12 +48,19 @@ public class ParseTable<T extends ParseColumn> {
         return internal.update(objectId, map);
     }
 
-    public Observable<ParseObject<T>> create(Map<T, Object> updates) {
+    public Observable<ParseObject<T>> create(Map<T, Object> attributes) {
         ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
         Map<String, Object> map = new HashMap<>();
-        for (Map.Entry entry : updates.entrySet()) {
+        for (Map.Entry entry : attributes.entrySet()) {
             map.put(entry.getKey().toString(), entry.getValue());
         }
+        return internal.create(map);
+    }
+
+    public Observable<ParseObject<T>> create(ParseMap attributes) {
+        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
+        Map<String, Object> map = new HashMap<>();
+        map.putAll(attributes.map());
         return internal.create(map);
     }
 
@@ -67,4 +79,14 @@ public class ParseTable<T extends ParseColumn> {
     public @NotNull ParseMap delete(@NotNull ParsePointer pointer) {
         return this.delete(pointer);
     }
+
+    public ParseMapBuilder<T> createMap() {
+        return new ParseMapBuilder();
+    }
+
+    public ParseMapBuilder<T> createMap(Map<T, Object> from) {
+        return new ParseMapBuilder(from);
+    }
+
+
 }
