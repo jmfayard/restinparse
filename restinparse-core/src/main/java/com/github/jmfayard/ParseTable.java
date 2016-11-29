@@ -10,7 +10,7 @@ import rx.Observable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParseTable<T extends ParseColumn> {
+public class ParseTable<T extends ParseColumn> extends ParseTableInternal<T> {
 
     public String className() {
         return className;
@@ -19,6 +19,7 @@ public class ParseTable<T extends ParseColumn> {
     private final String className;
 
     public ParseTable(String className) {
+        super(className);
         this.className = className;
     }
 
@@ -28,7 +29,7 @@ public class ParseTable<T extends ParseColumn> {
 
     public Observable<ParseObject<T>> findById(String id) {
         ParseQuery<T> query = query().withId(id).build();
-        return new ParseTableInternal<T>(query.className).find(query.params);
+        return query.find();
     }
 
     public Observable<ParseObject<T>> findById(ParsePointer id) {
@@ -40,28 +41,15 @@ public class ParseTable<T extends ParseColumn> {
     }
 
     public Observable<ParseObject<T>> update(String objectId, Map<T, Object> updates) {
-        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
-        Map<String, Object> map = new HashMap<>();
-        for (Map.Entry entry : updates.entrySet()) {
-            map.put(entry.getKey().toString(), entry.getValue());
-        }
-        return internal.update(objectId, map);
+        return super.update(objectId, updates);
     }
 
     public Observable<ParseObject<T>> create(Map<T, Object> attributes) {
-        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
-        Map<String, Object> map = new HashMap<>();
-        for (Map.Entry entry : attributes.entrySet()) {
-            map.put(entry.getKey().toString(), entry.getValue());
-        }
-        return internal.create(map);
+        return super.createObject(rowMapOf(attributes));
     }
 
     public Observable<ParseObject<T>> create(ParseMap attributes) {
-        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
-        Map<String, Object> map = new HashMap<>();
-        map.putAll(attributes.map());
-        return internal.create(map);
+        return super.createObject(rowMapOf(attributes));
     }
 
 
@@ -72,8 +60,7 @@ public class ParseTable<T extends ParseColumn> {
     }
 
     public @NotNull Observable<ParseMap> delete(@NotNull String objectId) {
-        ParseTableInternal<T> internal = new ParseTableInternal<>(this.className);
-        return internal.delete(objectId);
+        return super.delete(objectId);
     }
 
     public @NotNull ParseMap delete(@NotNull ParsePointer pointer) {

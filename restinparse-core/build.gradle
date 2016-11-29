@@ -54,18 +54,19 @@ sourceSets {
     test.java.srcDirs += 'src/main/kotlin'
 }
 
+def args = [
+        user: artifactory_user,
+        password: artifactory_password,
+        version: RESTINPARSE_VERSION,
+        group: RESTINPARSE_GROUP,
+        artifact: RESTINPARSE_ARTIFACT,
+        url: SONATYPE_NEXUS_URL,
+        result: "http://repo.smfhq.com/artifactory/public/com/github/jmfayard/restinparse/$RESTINPARSE_VERSION"
+]
+
 task debug  {
     group "upload"
 
-    def args = [
-       user: artifactory_user,
-       password: artifactory_password,
-       version: POM_VERSION,
-       group: POM_GROUP,
-       artifact: POM_ARTIFACT,
-       url: SONATYPE_NEXUS_URL,
-       result: "http://repo.smfhq.com/artifactory/public/com/github/jmfayard/restinparse/$POM_VERSION"
-    ]
     println("./gradlew :restinparse-core:uploadArchives  use following parameters")
     println args
 }
@@ -75,9 +76,9 @@ uploadArchives {
             repository(url: SONATYPE_NEXUS_URL) {
                 authentication(userName: artifactory_user, password: artifactory_password)
             }
-            pom.version = POM_VERSION
-            pom.artifactId = POM_ARTIFACT
-            pom.groupId = POM_GROUP
+            pom.version = args.version
+            pom.artifactId = args.artifact
+            pom.groupId = args.group
         }
     }
 }

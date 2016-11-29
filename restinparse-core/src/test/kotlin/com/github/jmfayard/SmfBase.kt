@@ -20,6 +20,9 @@ class SmfBase : FeatureSpec() {
 //        newTests()
     }
 
+    fun newTests() {
+
+    }
 
     object parse : PropertyGroup() {
         val applicationId by stringType
@@ -37,7 +40,7 @@ class SmfBase : FeatureSpec() {
                 .applicationId(instance[parse.applicationId])
                 .masterKey(instance[parse.masterKey])
                 .restKey(instance[parse.restKey])
-                .logLevel(RestInParse.LogLevel.NONE)
+                .logLevel(RestInParse.LogLevel.INFO)
                 .restApiUrlOfParseDotCom()
                 .apply()
     }
@@ -45,6 +48,20 @@ class SmfBase : FeatureSpec() {
 
     fun tests() {
 
+
+        RestInParse.startMasterSession()
+        feature("Comment") {
+            val query = Comment.table().query().exists(Comment.parent).include(Comment.parent).build()
+            rxScenario("Includes", query.find()) { o ->
+                o.getParseObject<Post>(Comment.parent).debug("parent") should notBeNull
+            }
+        }
+        feature("GameScore") {
+            val query = GameScore.table().query().exists(GameScore.user).include(GameScore.user).limit(3).build()
+            rxScenario("Includes", query.find()) { o ->
+                o.getParseUser(GameScore.user).debug("user") should notBeNull
+            }
+        }
 
         feature("GameScore") {
 
@@ -155,9 +172,7 @@ class SmfBase : FeatureSpec() {
     }
 
 
-    fun newTests() {
 
-    }
 
 }
 

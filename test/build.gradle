@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
 
-    compile(group: 'com.github.jmfayard', name: 'restinparse', version: POM_VERSION)
+    compile(group: 'com.github.jmfayard', name: 'restinparse', version: RESTINPARSE_VERSION)
 
 
     testCompile group: 'junit', name: 'junit', version: '4.11'

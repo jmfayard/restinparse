@@ -4,6 +4,7 @@ import com.github.jmfayard.model.ParseFile;
 import com.github.jmfayard.model.ParsePointer;
 import com.github.jmfayard.model.ParseUser;
 import com.github.jmfayard.model.ParseMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 
@@ -76,7 +77,16 @@ public class ParseObject<T extends ParseColumn> {
             String iso = (String) map.get("iso");
             return DateTime.parse(iso).toDate();
         }
+    }
 
+    public @NotNull Date createdAt() {
+        String iso = (String) map.get("createdAt");
+        return DateTime.parse(iso).toDate();
+    }
+
+    public @NotNull Date updatedAt() {
+        String iso = (String) map.get("updatedAt");
+        return DateTime.parse(iso).toDate();
     }
 
 

@@ -392,6 +392,7 @@ public class SelfieModel {
 
     public enum _User implements ParseColumn {
         campoint,
+        campointData,
         _id,
         _created_at,
         _updated_at,
