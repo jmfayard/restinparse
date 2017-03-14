@@ -1,7 +1,6 @@
 package com.github.jmfayard
 
-import com.github.jmfayard.SelfieModel.Event
-import com.github.jmfayard.SelfieModel._User
+import com.github.jmfayard.SelfieModel.*
 import com.github.jmfayard.model.ParseFile
 import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.github.jmfayard.model.ParseUser
@@ -10,6 +9,7 @@ import io.kotlintest.matchers.Matcher
 import io.kotlintest.matchers.be
 import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
+import rx.Observable
 import java.io.File
 import java.util.*
 
@@ -58,6 +58,48 @@ class ApiTests : RxSpec() {
     val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
     val year2k = Date(1480418083000L)
 
+
+    feature("Testing Parse Booleans") {
+      val queryTrue = _User.table().query()
+              .isTrue(_User.callsAccepted)
+              .count()
+      val queryNotTrue = _User.table().query()
+              .isNotTrue(_User.callsAccepted)
+              .count()
+      val queryAll = _User.table().query()
+              .count()
+
+      val zip = Observable.zip(queryTrue, queryNotTrue, queryAll, { a, b, c ->
+          Triple(a, b, c)
+      })
+
+      rxScenario("Real Booleans are True or False", zip) { triple ->
+        triple.debug("Real Booleans")
+
+        (triple.first + triple.second) shouldBe triple.third
+      }
+
+    }
+
+    feature("Testing not equsl") {
+      val notEqualToString = _User.table().query()
+              .notEqualToString(_User.countryCode, "+49")
+              .build()
+              .find()
+      val notEqualToInt = Attachment.table().query()
+              .notEqualToInt(Attachment.type, 9)
+              .build()
+              .find()
+      rxScenario("notEqualToString", notEqualToString) { user ->
+        (user.getSring(_User.countryCode) == "+49") shouldBe false
+      }
+
+      rxScenario("notEqualToInt", notEqualToInt) { attachment ->
+        (attachment.getInt(Attachment.type) == 9) shouldBe false
+      }
+
+    }
+
     feature("all camgirls") {
       val query = _User.table().query()
         .exists(_User.campoint)
@@ -86,7 +128,6 @@ class ApiTests : RxSpec() {
       val register = _User.table().create(map)
       val delete = register.flatMap { user: ParseObject<_User> ->
         user.createdAt().after(year2k) shouldBe true
-        user.updatedAt().after(year2k) shouldBe true
         _User.table().delete(user.id())
       }
       rxScenario("register then delete", delete) {
@@ -103,7 +144,7 @@ class ApiTests : RxSpec() {
       val fetchEventById = fetchEvents
         .take(1)
         .flatMap { result: ParseObject<Event> ->
-          val id = result.getSring(SelfieModel.Event.objectId)
+          val id = result.getSring(Event.objectId)
           return@flatMap Event.table().findById(id)
         }
 
@@ -232,6 +273,8 @@ class ApiTests : RxSpec() {
       }
 
     }
+
+
 
 
   }
