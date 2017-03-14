@@ -81,7 +81,7 @@ class ApiTests : RxSpec() {
 
     }
 
-    feature("Testing not equsl") {
+    feature("Testing notEqualToXXX") {
       val notEqualToString = _User.table().query()
               .notEqualToString(_User.countryCode, "+49")
               .build()
