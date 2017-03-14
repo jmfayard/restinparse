@@ -1,6 +1,8 @@
 package com.github.jmfayard.internal;
 
 import com.github.jmfayard.ParseConfig;
+import com.github.jmfayard.model.ParseBatchRequest;
+import com.github.jmfayard.model.ParseBatchResponse;
 import com.github.jmfayard.model.ParseError;
 import com.github.jmfayard.model.ParseMap;
 import com.squareup.moshi.JsonAdapter;
@@ -136,6 +138,14 @@ public class ParseRestClientFactory {
 
     public static JsonAdapter<ParseMap> mapAdapter() {
         return moshi().adapter(ParseMap.class);
+    }
+
+    public static JsonAdapter<ParseBatchResponse> parseBatchResponseAdapter() {
+        return moshi().adapter(ParseBatchResponse.class);
+    }
+
+    public static JsonAdapter<ParseBatchRequest> parseBatchAdapter() {
+        return moshi().adapter(ParseBatchRequest.class);
     }
 
     public static JsonAdapter<ParseError> parseErrorAdapter() {

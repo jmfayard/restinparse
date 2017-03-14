@@ -60,9 +60,6 @@ class ApiTests : RxSpec() {
         val update = _User.table().createMap().set(_User.callsAccepted, true).build()
         ParseBatchRequest.update(user, update)
       }
-      rxScenario("Batch Stream", stream.take(1)) { a ->
-        a.debug("response")
-      }
       rxScenario("Batch Execute", RestInParse.batchExecutor(stream)) { a ->
         a.debug("response")
       }

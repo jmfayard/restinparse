@@ -106,7 +106,7 @@ public class RestInParse {
         return response.body();
     }
 
-    public static Observable<Object> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
+    public static Observable<List<ParseBatchResponse>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
         return Settings.masterClient().batchExecutor(stream)
                 .map(RestInParse::assertSuccessfull);
 

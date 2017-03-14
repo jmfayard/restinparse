@@ -95,7 +95,7 @@ public class ParseRestClient {
         return null;
     }
 
-    public Observable<Response<Object>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
+    public Observable<Response<List<ParseBatchResponse>>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
         return stream
                 .buffer(20)
                 .flatMap(list -> parseRestApi.batchRequests(new ParseBatch(list)));
