@@ -1,6 +1,6 @@
 
 
-RestInParse 0.07
+RestInParse 0.0.7
 ===
 
 - Implements `Parse.Query.count()`
@@ -8,7 +8,7 @@ RestInParse 0.07
 - New criteria `notEqualToInt()`, `notEqualToPtr`, `notEqualToString`
 - query.findAll() now fetch objects 1000 by request
 
-RestInParse 0.06
+RestInParse 0.0.6
 ===
 
 - query.limit(limit).find() issue a single http request that fetch at most 1000 objects
