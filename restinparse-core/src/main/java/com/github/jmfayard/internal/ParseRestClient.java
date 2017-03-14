@@ -1,14 +1,12 @@
 package com.github.jmfayard.internal;
 
 
-import com.github.jmfayard.model.CloudResult;
-import com.github.jmfayard.model.ParseFile;
-import com.github.jmfayard.model.ParseResultSchemas;
-import com.github.jmfayard.model.ParseMap;
+import com.github.jmfayard.model.*;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
+import rx.Subscriber;
 
 import java.io.File;
 import java.util.List;
@@ -95,5 +93,11 @@ public class ParseRestClient {
 
     public Observable<File> downloadFile(@NotNull ParseFile parseFile, @NotNull File destination) {
         return null;
+    }
+
+    public Observable<Response<Object>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
+        return stream
+                .buffer(20)
+                .flatMap(list -> parseRestApi.batchRequests(new ParseBatch(list)));
     }
 }

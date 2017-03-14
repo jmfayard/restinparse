@@ -8,6 +8,7 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
+import rx.Subscriber;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class RestInParse {
     private static ParseRestClient currentClient() {
         return Settings.currentClient();
     }
-
 
 
     @NotNull
@@ -98,9 +98,18 @@ public class RestInParse {
 
     private static <T> T assertSuccessfull(Response<T> response) {
         if (!response.isSuccessful()) {
-            throw new ParseError(response.code(), response.message());
+            ParseError error = new ParseError(response.code(), response.message());
+            System.err.println(error);
+            System.err.println(response.errorBody());
+            throw error;
         }
         return response.body();
+    }
+
+    public static Observable<Object> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
+        return Settings.masterClient().batchExecutor(stream)
+                .map(RestInParse::assertSuccessfull);
+
     }
 
 

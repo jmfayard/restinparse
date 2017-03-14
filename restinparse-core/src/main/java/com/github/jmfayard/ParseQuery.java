@@ -253,6 +253,17 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
             return new ParseQuery<>(className, params, _where, _includes, skip, limit, order, 1);
         }
 
+        public
+        @NotNull  Observable<ParseObject<T>> find() {
+            return build().find();
+        }
+
+        public
+        @NotNull  Observable<ParseObject<T>> findAll() {
+            return build().findAll();
+        }
+
+
 
         private Object datePtr(@NotNull Date date) {
             return objectOf("__type", "Date", "iso", dateFormat.format(date));

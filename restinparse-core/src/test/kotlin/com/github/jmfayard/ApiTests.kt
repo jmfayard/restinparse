@@ -1,6 +1,7 @@
 package com.github.jmfayard
 
 import com.github.jmfayard.SelfieModel.*
+import com.github.jmfayard.model.ParseBatchRequest
 import com.github.jmfayard.model.ParseFile
 import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.github.jmfayard.model.ParseUser
@@ -10,6 +11,7 @@ import io.kotlintest.matchers.be
 import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
 import rx.Observable
+import rx.subjects.Subject
 import java.io.File
 import java.util.*
 
@@ -45,8 +47,27 @@ class ApiTests : RxSpec() {
 
     RestInParse.startMasterSession()
 
-    allTests()
+    newTests()
+//    allTests()
 
+  }
+
+  fun newTests() {
+    feature("Batch operations") {
+      val users = _User.table().query().limit(10).find()
+
+      val stream = users.map { user ->
+        val update = _User.table().createMap().set(_User.callsAccepted, true).build()
+        ParseBatchRequest.update(user, update)
+      }
+      rxScenario("Batch Stream", stream.take(1)) { a ->
+        a.debug("response")
+      }
+      rxScenario("Batch Execute", RestInParse.batchExecutor(stream)) { a ->
+        a.debug("response")
+      }
+
+    }
   }
 
   fun allTests() {
@@ -57,6 +78,8 @@ class ApiTests : RxSpec() {
     val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
     val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
     val year2k = Date(1480418083000L)
+
+
 
 
     feature("Testing Parse Booleans") {
