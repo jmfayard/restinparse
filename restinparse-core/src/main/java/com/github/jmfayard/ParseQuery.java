@@ -3,13 +3,10 @@ package com.github.jmfayard;
 import com.github.jmfayard.internal.DefaultParseColumn;
 import com.github.jmfayard.internal.ParseTableInternal;
 import com.github.jmfayard.internal.Strings;
-import com.github.jmfayard.model.ParseMap;
 import com.github.jmfayard.model.ParsePointer;
-import com.github.jmfayard.model.ParseUser;
 import com.squareup.moshi.Moshi;
 import org.jetbrains.annotations.NotNull;
 import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,7 +15,7 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
     public final String className;
     public final Map<String, String> params;
 
-    ParseQuery(String className, Map<String, String> params, Map<String, Object> where, List<String> includes, int skip, int limit, String order) {
+    ParseQuery(String className, Map<String, String> params, Map<String, Object> where, List<String> includes, int skip, int limit, String order, int count) {
         super(className);
         this.className = className;
         this.params = params;
@@ -27,6 +24,7 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
         this.skip = skip;
         this.limit = limit;
         this.order = order;
+        this.count = count;
     }
 
     public Observable<ParseObject<T>> find() {
@@ -47,6 +45,7 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
     final int skip; // not implemtented
     final int limit; // no limit
     final String order;
+    private final int count;
 
 
     public Observable<ParseObject<T>> findById(String id) {
@@ -98,19 +97,47 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
         }
 
         public
-        @NotNull Builder<T> equalToBoolean(@NotNull T key, boolean value) {
+        @NotNull Builder<T> notEqualToInt(@NotNull T key, int value) {
+            Object o = objectOf("$ne", value, key);
+            _where.put(key.toString(), o);
+            return this;
+        }
+
+        public
+        @NotNull Builder<T> isTrue(@NotNull T key) {
+            _where.put(key.toString(), true);
+            return this;
+        }
+
+        public
+        @NotNull Builder<T> isNotTrue(@NotNull T key) {
+            Object o = objectOf("$ne", true, key);
+            _where.put(key.toString(), o);
+            return this;
+        }
+
+        public
+        @NotNull Builder<T> equalToString(@NotNull T key, @NotNull String value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull Builder<T> equalToString(@NotNull T key, String value) {
+        @NotNull Builder<T> notEqualToString(@NotNull T key, @NotNull String value) {
+            Object o = objectOf("$ne", value, key);
+            _where.put(key.toString(), o);
+            return this;
+        }
+
+        public
+        @NotNull Builder<T> equalToPtr(@NotNull T key, @NotNull ParsePointer value) {
             _where.put(key.toString(), value);
             return this;
         }
 
         public
-        @NotNull Builder<T> equalToPtr(@NotNull T key, ParsePointer value) {
+        @NotNull Builder<T> notEqualToPtr(@NotNull T key, @NotNull ParsePointer value) {
+            Object o = objectOf("$ne", value, key);
             _where.put(key.toString(), value);
             return this;
         }
@@ -187,6 +214,18 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
             return this;
         }
 
+        public
+        @NotNull Observable<Long> count() {
+            Map<String, String> params = new HashMap<String, String>();
+            Moshi moshi = new Moshi.Builder().build();
+            if (_where.size() > 0) {
+                params.put("where", moshi.adapter(Map.class).toJson(_where));
+            }
+            params.put("limit", "0");
+            params.put("count", "1");
+            ParseQuery<ParseColumn> query = new ParseQuery<>(className, params, _where, _includes, skip, limit, order, 1);
+            return query.count(params);
+        }
 
 
         public
@@ -211,7 +250,7 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
                 params.put("include", include);
             }
 
-            return new ParseQuery(className, params, _where, _includes, skip, limit, order);
+            return new ParseQuery<>(className, params, _where, _includes, skip, limit, order, 1);
         }
 
 
@@ -240,4 +279,5 @@ public class ParseQuery<T extends ParseColumn> extends ParseTableInternal<T> {
 
 
     }
+
 }

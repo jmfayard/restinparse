@@ -47,6 +47,16 @@ public class ParseTableInternal<T extends ParseColumn> {
         return response.flatMap((r) -> flatMapResponse(r, null));
     }
 
+    public Observable<Long> count(Map<String, String> params) {
+        ParseRestApi api = ParseRestClientFactory.masterClient();
+        return api.query(className, params).map((r) -> {
+            if (!r.isSuccessful()) {
+                throw errorFrom(r);
+            }
+            return r.body().count;
+        });
+    }
+
     protected  Observable<ParseObject<T>> findAll(ParseQuery.Builder<DefaultParseColumn> queryBuilder) {
         ParseRestApi api = ParseRestClientFactory.masterClient();
 
@@ -61,7 +71,7 @@ public class ParseTableInternal<T extends ParseColumn> {
     }
 
 
-    protected final int QUERY_ALL_LIMIT = 100;
+    protected final int QUERY_ALL_LIMIT = 1000;
 
     protected Observable<ParseObject<T>> flatMapResponse(Response<QueryResults> r, @Nullable BehaviorSubject<Date> relay) {
         if (!r.isSuccessful()) {
@@ -133,6 +143,7 @@ public class ParseTableInternal<T extends ParseColumn> {
         return result;
 
     }
+
 
 
 }
