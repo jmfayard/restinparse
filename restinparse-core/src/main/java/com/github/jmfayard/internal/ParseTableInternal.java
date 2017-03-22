@@ -102,7 +102,7 @@ public class ParseTableInternal<T extends ParseColumn> {
     @NotNull
     protected Observable<ParseObject<T>> update(String objectId, Map<T, Object> updates) {
         ParseRestApi api = ParseRestClientFactory.masterClient();
-        Observable<Response<ParseMap>> response = api.updateObject(className, objectId, rowMapOf(updates));
+        Observable<Response<ParseMap>> response = api.updateObject(className, objectId, rawMap(updates));
         return response
                 .map(ParseTableInternal::assertSuccessfull)
                 .map(ParseObject::new);
@@ -110,7 +110,7 @@ public class ParseTableInternal<T extends ParseColumn> {
     }
 
     @NotNull
-    protected Map<String, Object> rowMapOf(Map<T, Object> updates) {
+    protected Map<String, Object> rawMap(Map<T, Object> updates) {
         Map<String, Object> map = new HashMap<>();
         for (Map.Entry entry : updates.entrySet()) {
             map.put(entry.getKey().toString(), entry.getValue());
@@ -119,7 +119,7 @@ public class ParseTableInternal<T extends ParseColumn> {
     }
 
     @NotNull
-    protected Map<String, Object> rowMapOf(ParseMap updates) {
+    protected Map<String, Object> rawMap(ParseMap updates) {
         Map<String, Object> map = new HashMap<>();
         map.putAll(updates.map());
         return map;

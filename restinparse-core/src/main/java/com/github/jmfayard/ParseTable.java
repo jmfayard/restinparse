@@ -1,6 +1,8 @@
 package com.github.jmfayard;
 
+import com.github.jmfayard.internal.ParseRestClientFactory;
 import com.github.jmfayard.internal.ParseTableInternal;
+import com.github.jmfayard.model.ParseBatchRequest;
 import com.github.jmfayard.model.ParseMapBuilder;
 import com.github.jmfayard.model.ParsePointer;
 import com.github.jmfayard.model.ParseMap;
@@ -45,19 +47,49 @@ public class ParseTable<T extends ParseColumn> extends ParseTableInternal<T> {
     }
 
     public Observable<ParseObject<T>> create(Map<T, Object> attributes) {
-        return super.createObject(rowMapOf(attributes));
+        return super.createObject(rawMap(attributes));
     }
 
     public Observable<ParseObject<T>> create(ParseMap attributes) {
-        return super.createObject(rowMapOf(attributes));
+        return super.createObject(rawMap(attributes));
     }
-
 
 
     @NotNull
     public Observable<ParseObject<T>> update(ParsePointer ptr, Map<T, Object> updates) {
         return this.update(ptr.objectId, updates);
     }
+
+    @NotNull
+    public ParseBatchRequest batchUpdate(String objectId, Map<T, Object> updates) {
+        return new ParseMapBuilder<T>(className, rawMap(updates)).batchUpdate(objectId);
+    }
+
+    @NotNull
+    public ParseBatchRequest batchUpdate(ParsePointer ptr, Map<T, Object> updates) {
+        return batchUpdate(ptr.objectId, updates);
+    }
+
+    @NotNull
+    public ParseBatchRequest batchDelete(String objectId) {
+        String path = String.format("%sclasses/%s/%s",
+                ParseRestClientFactory.basePath(), className, objectId);
+        return new ParseBatchRequest("DELETE", new HashMap<String, Object>(), path);
+    }
+
+    @NotNull
+    public ParseBatchRequest batchDelete(ParsePointer ptr) {
+        return batchDelete(ptr.objectId);
+    }
+
+    public ParseBatchRequest batchCreate(Map<T, Object> attributes) {
+        return new ParseMapBuilder<T>(className, rawMap(attributes)).batchCreate();
+    }
+
+    public ParseBatchRequest batchCreate(ParseMap attributes) {
+        return new ParseMapBuilder<T>(className, attributes.map()).batchCreate();
+    }
+
 
     public @NotNull Observable<ParseMap> delete(@NotNull String objectId) {
         return super.delete(objectId);
@@ -68,11 +100,7 @@ public class ParseTable<T extends ParseColumn> extends ParseTableInternal<T> {
     }
 
     public ParseMapBuilder<T> createMap() {
-        return new ParseMapBuilder();
-    }
-
-    public ParseMapBuilder<T> createMap(Map<T, Object> from) {
-        return new ParseMapBuilder(from);
+        return new ParseMapBuilder<T>(className);
     }
 
 
