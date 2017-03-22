@@ -34,6 +34,9 @@ interface ParseRestApi {
     @GET("classes/{className}")
     Observable<Response<QueryResults>> query(@Path("className") String className, @QueryMap Map<String, String> queryOptions);
 
+    @POST("batch")
+    Observable<Response<List<ParseBatchResponse>>> batchRequests(@Body ParseBatch batch);
+
     /**
      * Cloud Code
      **/

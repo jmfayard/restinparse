@@ -1,14 +1,13 @@
 package com.github.jmfayard.internal;
 
 import com.github.jmfayard.ParseConfig;
+import com.github.jmfayard.model.ParseBatchRequest;
+import com.github.jmfayard.model.ParseBatchResponse;
 import com.github.jmfayard.model.ParseError;
 import com.github.jmfayard.model.ParseMap;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Retrofit;
@@ -27,6 +26,9 @@ public class ParseRestClientFactory {
     private static ParseRestApi loggedinClient;
     private static ParseRestApi masterClient;
 
+    public static String basePath() {
+        return HttpUrl.parse(PARSE_URL).encodedPath();
+    }
     public static void setHostedParseRestUrl(String url) {
         PARSE_URL = url;
     }
@@ -136,6 +138,14 @@ public class ParseRestClientFactory {
 
     public static JsonAdapter<ParseMap> mapAdapter() {
         return moshi().adapter(ParseMap.class);
+    }
+
+    public static JsonAdapter<ParseBatchResponse> parseBatchResponseAdapter() {
+        return moshi().adapter(ParseBatchResponse.class);
+    }
+
+    public static JsonAdapter<ParseBatchRequest> parseBatchAdapter() {
+        return moshi().adapter(ParseBatchRequest.class);
     }
 
     public static JsonAdapter<ParseError> parseErrorAdapter() {

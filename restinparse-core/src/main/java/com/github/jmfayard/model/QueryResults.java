@@ -17,5 +17,11 @@ public class QueryResults {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return "QueryResults{" +
+                "results=" + results +
+                ", count=" + count +
+                '}';
+    }
 }

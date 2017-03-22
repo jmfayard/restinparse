@@ -1,7 +1,9 @@
 package com.github.jmfayard
 
 import com.github.jmfayard.SelfieModel.*
+import com.github.jmfayard.model.ParseBatchRequest
 import com.github.jmfayard.model.ParseFile
+import com.github.jmfayard.model.ParseMapBuilder
 import com.github.jmfayard.model.ParseResultSchemas.ParseSchema
 import com.github.jmfayard.model.ParseUser
 import com.natpryce.konfig.*
@@ -10,7 +12,10 @@ import io.kotlintest.matchers.be
 import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
 import rx.Observable
+import rx.subjects.Subject
+import sun.jvmstat.perfdata.monitor.protocol.local.PerfDataFile.getFile
 import java.io.File
+import java.lang.reflect.Array.getDouble
 import java.util.*
 
 
@@ -45,11 +50,31 @@ class ApiTests : RxSpec() {
 
     RestInParse.startMasterSession()
 
-    allTests()
+    newTests()
+//    allTests()
+
+  }
+
+  fun newTests() {
 
   }
 
   fun allTests() {
+
+    feature("Batch Create") {
+
+      val objects = (1..10).map {
+        val map = mapOf(EventGroup.type to 42)
+        EventGroup.table().batchCreate(map)
+      }
+
+      val createObjects = RestInParse.batchExecutor(Observable.from(objects))
+
+      rxScenario("Batch Execute", createObjects) { a ->
+        a.debug("create")
+      }
+
+    }
 
     val sessionToken = instance[parse.sessionToken]
     val credentials = instance[parse.username] to instance[parse.password]
@@ -57,6 +82,39 @@ class ApiTests : RxSpec() {
     val userFields = arrayOf("username", "objectId", "updatedAt", "createdAt")
     val basicFields = arrayOf("objectId", "updatedAt", "createdAt")
     val year2k = Date(1480418083000L)
+
+    feature("Batch Deletes") {
+
+      val deleteStream = EventGroup.table().query().limit(10).find()
+              .map { eventGroup: ParseObject<EventGroup> ->
+
+                EventGroup.table().batchDelete(eventGroup.id())
+              }
+      val executeUpdates = RestInParse.batchExecutor(deleteStream)
+
+      rxScenario("Batch Deletes", executeUpdates) { a ->
+        a.debug("delete")
+      }
+
+    }
+
+    feature("Batch Updates") {
+
+      val updateStream = _User.table().query().limit(10)
+              .findAll()
+              .take(100)
+              .map { user: ParseObject<_User> ->
+                val updates = mapOf(_User.callsAccepted to true)
+                _User.table().batchUpdate(user.id(), updates)
+              }
+      val executeUpdates = RestInParse.batchExecutor(updateStream)
+
+      rxScenario("Batch Updates", executeUpdates) { a ->
+        a.debug("update")
+      }
+
+    }
+
 
 
     feature("Testing Parse Booleans") {

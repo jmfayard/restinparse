@@ -1,5 +1,15 @@
 
 
+RestInParse 0.0.8
+===
+
+Rest In Parse now supports Batch operations 
+
+It works by creating a `stream` of data returned by  `ParseTable.batchUpdate()`, `ParseTable.batchCreate()` and `ParseTable.batchDelete()`
+
+You then call `RestInParse.batchExecutor(stream)` which will execute up to 20 operations for each http request
+
+
 RestInParse 0.0.7
 ===
 
