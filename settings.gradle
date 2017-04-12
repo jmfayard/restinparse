@@ -1,4 +1,1 @@
 rootProject.name = 'restinparse'
-include 'restinparse-core'
-include 'test'
-
