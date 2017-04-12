@@ -67,6 +67,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
 
 
 // To specify a license in the pom:
