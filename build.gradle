@@ -20,9 +20,6 @@ targetCompatibility = 1.8
 
 repositories {
     jcenter()
-    maven {
-        url SONATYPE_NEXUS_URL
-    }
 }
 
 
