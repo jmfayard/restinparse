@@ -8,7 +8,6 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 import rx.Observable;
-import rx.Subscriber;
 
 import java.io.File;
 import java.util.ArrayList;
