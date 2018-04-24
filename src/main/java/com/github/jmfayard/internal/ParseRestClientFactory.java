@@ -7,6 +7,8 @@ import com.github.jmfayard.model.ParseError;
 import com.github.jmfayard.model.ParseMap;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Rfc3339DateJsonAdapter;
+
 import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 import java.io.IOException;
+import java.util.Date;
 
 import static com.github.jmfayard.internal.Settings.*;
 
@@ -131,6 +134,7 @@ public class ParseRestClientFactory {
         if (moshi == null) {
             moshi = new Moshi.Builder()
                     .add(new ParseMap.Adapter())
+                    .add(Date.class, new Rfc3339DateJsonAdapter())
                     .build();
         }
         return moshi;
