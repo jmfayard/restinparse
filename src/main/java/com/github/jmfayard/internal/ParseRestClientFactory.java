@@ -90,6 +90,9 @@ public class ParseRestClientFactory {
             case DEBUG:
                 level = HttpLoggingInterceptor.Level.HEADERS;
                 break;
+            case FULL:
+                level = HttpLoggingInterceptor.Level.BODY;
+                break;
         }
 
         return new OkHttpClient.Builder()
