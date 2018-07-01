@@ -85,7 +85,7 @@ public class ParseRestClientFactory {
                 level = HttpLoggingInterceptor.Level.BASIC;
                 break;
             case DEBUG:
-                level = HttpLoggingInterceptor.Level.HEADERS;
+                level = HttpLoggingInterceptor.Level.BODY;
                 break;
         }
 

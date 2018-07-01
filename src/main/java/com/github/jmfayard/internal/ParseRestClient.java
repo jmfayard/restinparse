@@ -10,6 +10,7 @@ import rx.Observable;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class ParseRestClient {
     final ParseRestApi parseRestApi;
@@ -94,9 +95,10 @@ public class ParseRestClient {
         return null;
     }
 
-    public Observable<Response<List<ParseBatchResponse>>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
+    public Observable<Response<List<ParseBatchResponse>>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream, long delay, TimeUnit timeUnit, int itemsPerBatch) {
         return stream
-                .buffer(20)
+                .buffer(Math.min(50, itemsPerBatch))
+                .concatMap(it -> Observable.just(it).delay(delay, timeUnit))
                 .flatMap(list -> parseRestApi.batchRequests(new ParseBatch(list)));
     }
 }

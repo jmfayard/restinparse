@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class RestInParse {
 
@@ -106,9 +107,20 @@ public class RestInParse {
     }
 
     public static Observable<List<ParseBatchResponse>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream) {
-        return Settings.masterClient().batchExecutor(stream)
-                .map(RestInParse::assertSuccessfull);
+        return batchExecutor(stream, 0, TimeUnit.SECONDS, 20);
+    }
 
+    public static Observable<List<ParseBatchResponse>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream, long delay, TimeUnit timeUnit) {
+        return batchExecutor(stream, delay, timeUnit, 20);
+    }
+
+    public static Observable<List<ParseBatchResponse>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream, int itemsPerBatch) {
+        return batchExecutor(stream, 0, TimeUnit.SECONDS, itemsPerBatch);
+    }
+
+    public static Observable<List<ParseBatchResponse>> batchExecutor(@NotNull Observable<ParseBatchRequest> stream, long delay, TimeUnit timeUnit, int itemsPerBatch) {
+        return Settings.masterClient().batchExecutor(stream, delay, timeUnit, itemsPerBatch)
+                .map(RestInParse::assertSuccessfull);
     }
 
 
