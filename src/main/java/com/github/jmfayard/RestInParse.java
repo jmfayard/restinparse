@@ -124,5 +124,5 @@ public class RestInParse {
     }
 
 
-    public enum LogLevel {NONE, INFO, DEBUG}
+    public enum LogLevel {NONE, INFO, DEBUG, FULL}
 }
